@@ -7,13 +7,18 @@ import { useState } from "react"
 
 
 type Props = {
-    product: ProductType
+    product: ProductType,
+    onAdd?: (e: React.MouseEvent) => boolean
 }
 
-export default function AddToCartButton({ product }: Props) {
+export default function AddToCartButton({ product, onAdd }: Props) {
     const dispatch = useAppDispatch()
     const [added, setAdded] = useState(false)
-    const handleAdd = () => {
+
+    const handleAdd = (event: React.MouseEvent) => {
+        const check = onAdd ? onAdd(event) : true
+        if (!check) return;
+
         dispatch(addItem({
             id: product.id,
             name: product.name,
@@ -24,7 +29,7 @@ export default function AddToCartButton({ product }: Props) {
         setAdded(true)
         setTimeout(() => {
             setAdded(false)
-        }, 1500)
+        }, 1500);
     }
 
     return (

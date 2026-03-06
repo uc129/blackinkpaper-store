@@ -9,16 +9,16 @@ const headingStyles = {
     h3: "text-h3",
     h4: "text-h4",
     h5: "text-h5",
-    // ext-xl lg:text-2xl
     h6: "text-h6",
 
+    caption: "text-caption",
     display: "text-display md:text-display",
     displayCaption: "text-display-caption",
     displayThin: "text-display-thin",
 
-    title: "text-title text-3xl lg:text-4xl 2xl:text-5xl text-center",
-    titleSmall: "text-title-sm text-xl lg:text-2xl 2xl:text-3xl text-center",
-    titleLarge: "text-title-lg text-5xl lg:text-6xl 2xl:text-7xl text-center"
+    title: "text-title text-3xl lg:text-4xl 2xl:text-5xl",
+    titleSmall: "text-title-sm text-xl lg:text-2xl 2xl:text-3xl",
+    titleLarge: "text-title-lg text-5xl lg:text-6xl 2xl:text-7xl"
 
 } as const;
 

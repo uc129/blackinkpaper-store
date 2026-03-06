@@ -20,7 +20,10 @@ export type ProductType = {
     isFeatured: boolean;
     slug: string;
     productShopCategory: ProductShopCategory;
+    variants?: Record<string, string>
 }
+
+
 
 
 
