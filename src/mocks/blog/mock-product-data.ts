@@ -110,7 +110,7 @@ export const mockProducts: ProductType[] = [
         price_paisa: 450000.00,
         categoryId: 1,
         subCategoryId: 1,
-        coverImageUrl: "https://picsum.photos/1200/1800?random=1",
+        coverImageUrl: "https://picsum.photos/2400/1800?random=1",
         headerImageUrl: "https://picsum.photos/1200/1800?random=1",
         allImageUrls: [
             "https://picsum.photos/1200/1800?random=1",

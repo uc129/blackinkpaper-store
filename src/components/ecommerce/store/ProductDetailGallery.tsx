@@ -10,8 +10,6 @@ import lgThumbnail from "lightgallery/plugins/thumbnail"
 import "lightgallery/css/lightgallery.css"
 import "lightgallery/css/lg-zoom.css"
 import "lightgallery/css/lg-thumbnail.css"
-import { ImageWithCaption } from "@/components/_ui/images/imageWithCaption"
-import Image from "next/image"
 import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback"
 
 export type GalleryImage = {
@@ -23,19 +21,18 @@ export type GalleryImage = {
 type Props = {
     images: GalleryImage[]
     className?: string,
-    maxHeightTwClasses?: string
 }
 
-export default function ProductDetailGallery({ images, className, maxHeightTwClasses }: Props) {
+export default function ProductDetailGallery({ images, className }: Props) {
 
     const [active, setActive] = useState(0)
     const galleryRef = useRef<ILightGallery | null>(null)
 
     return (
-        <div className={`w-full xl:w-1/2 grid gap-4 ${className}`}>
+        <div className={`grid gap-4 ${className}`}>
 
             {/* Thumbnails */}
-            <div className="col-12 lg:col-2 flex justify-center lg:justify-start lg:flex-col gap-3">
+            <div className="col-12 2xl:col-2  flex justify-center lg:justify-start 2xl:flex-col gap-3">
                 {images.map((img, i) => (
                     <button
                         key={i}
@@ -52,22 +49,19 @@ export default function ProductDetailGallery({ images, className, maxHeightTwCla
                         />
                     </button>
                 ))}
-
             </div>
 
 
             {/* Main artwork */}
             <div
-                className="col-12 lg:col-9 min-w-0 w-full relative rounded-2xl overflow-clip"
+                className="min-w-0 w-full h-[50vh] lg:h-[80vh] col-12 2xl:col-9  relative rounded-2xl overflow-clip bg-sky-100 p-4"
                 onClick={() => galleryRef.current?.openGallery(active)}
             >
                 <ImageWithFallback
                     src={images[active].src}
                     alt={images[active].alt ?? ""}
-                    width={1000}
-                    height={1500}
-                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 70vw, 800px"
-                    className="w-full h-auto min-h-full max-h-[80vh] object-contain rounded-2xl overflow-clip"
+                    fill
+                    className="object-cover  rounded-2xl overflow-clip"
                 />
             </div>
 

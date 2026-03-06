@@ -391,7 +391,6 @@ body {
   max-width: var(--container-max);
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin-bottom: calc(var(--margin));
 }
 
@@ -399,7 +398,6 @@ body {
   max-width: var(--container-max);
   display: flex;
   flex-direction: column;
-  align-items: center;
   margin-bottom: calc(var(--margin));
 }
 

@@ -53,3 +53,13 @@ export function ContainerSimpleInLine({ children, className = "" }: ContainerPro
         </div>
     );
 }
+
+
+
+export function Grid({ children, className = "" }: ContainerProps) {
+    return (
+        <div className={`grid ${className}`}>
+            {children}
+        </div>
+    )
+}

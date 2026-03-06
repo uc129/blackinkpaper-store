@@ -1,14 +1,25 @@
-export function PriceTag({ price, previous }: { price: number; previous?: number }) {
+import { ContainerSimple, ContainerSimpleInLine, Grid } from "../_ui/containers/container-simple";
+
+
+const formatPriceToIntl = (amount: number, currencyCode: string) => new Intl.NumberFormat("en-IN", {
+    style: "currency",
+    currency: currencyCode || "INR"
+}).format(amount)
+
+
+export function PriceTag({ currencyCode, price, previous, notificationText }: { currencyCode: string, price: number; previous?: number, notificationText?: string }) {
     return (
-        <div className="flex items-center gap-space-2">
-            <span className="text-title-sm text-text-primary font-bold">
-                ₹{price}
-            </span>
-            {previous && (
-                <span className="text-body-xs text-text-secondary line-through">
-                    ₹{previous}
-                </span>
-            )}
-        </div>
+        <ContainerSimpleInLine className="justify-start xl:gap-12 flex-wrap w-fit ">
+
+            <Grid className="items-center gap-2 md:gap-4">
+                <span className="col-6 text-title-sm text-text-primary font-bold"> {formatPriceToIntl(price, currencyCode)}</span>
+                {previous && (
+                    <span className="col-6 text-body-xs text-text-secondary line-through">{formatPriceToIntl(previous, currencyCode)}</span>
+                )}
+            </Grid>
+
+            {notificationText && <div> {notificationText} </div>}
+
+        </ContainerSimpleInLine>
     );
 }

@@ -13,16 +13,16 @@ export default function Home() {
   return (
     <Page className="home landing">
       <Hero />
-      <Section>
+      <Section className="mx-auto">
         <WorkProjectsGrid />
       </Section>
-      <Section>
+      <Section className="mx-auto">
         <OriginalWorksBanner />
       </Section>
-      <Section>
+      <Section className="mx-auto">
         <LandingFlipbookContainer />
       </Section>
-      <Section>
+      <Section className="mx-auto">
         <AboutSection />
       </Section>
       {/* <NewsletterSignup /> */}
