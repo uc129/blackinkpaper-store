@@ -1,0 +1,60 @@
+/* Dark cinematic backdrop */
+.lg-backdrop {
+  background-color: #0a0a0c !important;
+  opacity: 0.98 !important;
+}
+
+/* Remove ugly default toolbar feel */
+.lg-toolbar {
+  background: transparent !important;
+}
+
+/* Subtle top fade */
+.lg-outer .lg-thumb-outer {
+  background: #111 !important;
+}
+
+/* Image container */
+.lg-outer .lg-item {
+  background: transparent !important;
+}
+
+/* Refined navigation arrows */
+.lg-prev,
+.lg-next {
+  color: #ccc !important;
+  font-size: 28px !important;
+  transition: opacity 0.3s ease;
+}
+
+.lg-prev:hover,
+.lg-next:hover {
+  opacity: 0.7;
+}
+
+/* Caption styling */
+.art-caption {
+  text-align: center;
+  padding-top: 20px;
+  font-size: 14px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #aaa;
+}
+
+/* Thumbnail grid */
+.art-thumb {
+  cursor: pointer;
+  transition: transform 0.4s ease, opacity 0.4s ease;
+}
+
+.art-thumb:hover {
+  transform: scale(1.03);
+  opacity: 0.9;
+}
+
+/* Remove bright default border highlights */
+.lg-thumb-item.active,
+.lg-thumb-item:hover {
+  border-color: #444 !important;
+}

@@ -1,0 +1,42 @@
+{
+  "name": "blackinkpaper",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "biome check",
+    "format": "biome format --write"
+  },
+  "dependencies": {
+    "@react-three/drei": "^10.7.7",
+    "@react-three/fiber": "^9.5.0",
+    "@tanstack/react-query": "^5.90.21",
+    "class-variance-authority": "^0.7.1",
+    "embla-carousel-auto-scroll": "^8.6.0",
+    "embla-carousel-autoplay": "^8.6.0",
+    "embla-carousel-class-names": "^8.6.0",
+    "embla-carousel-react": "^8.6.0",
+    "framer-motion": "^12.34.3",
+    "lightgallery": "^2.9.0",
+    "lucide-react": "^0.559.0",
+    "next": "^16.1.6",
+    "react": "19.2.0",
+    "react-dom": "19.2.0",
+    "shiki": "^3.19.0",
+    "tailwind-merge": "^3.4.0",
+    "three": "^0.182.0",
+    "zod": "^4.1.13"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.2.0",
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "baseline-browser-mapping": "^2.9.19",
+    "tailwindcss": "^4",
+    "typescript": "^5"
+  }
+}
