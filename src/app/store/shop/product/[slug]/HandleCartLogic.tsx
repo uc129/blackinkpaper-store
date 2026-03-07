@@ -1,5 +1,6 @@
 'use client'
-import { ContainerSimple } from "@/components/_ui/containers/container-simple";
+import { ContainerSimple, Grid } from "@/components/_ui/containers/container-simple";
+import { GlassShowcase } from "@/components/_ui/interactive/glass-showcase";
 import { QuantitySelector } from "@/components/ecommerce/QuantitySelector";
 import AddToCartButton from "@/components/ecommerce/store/AddToCartButton";
 import { VariantSelector } from "@/components/ecommerce/store/VariantSelector";
@@ -39,14 +40,15 @@ export default function HandleCartLogicComponent({ product }: { product: Product
             key => selection.variants[key]
         )
 
-    const handleSubmit = () => {
+    const validateCartItem = () => {
         if (product.variants) {
             const variantsCheck = allVariantsSelected();
             if (!variantsCheck) {
                 alert("Please select all required options")
-                return;
+                return false;
             }
         }
+        return true
     }
 
 
@@ -56,21 +58,34 @@ export default function HandleCartLogicComponent({ product }: { product: Product
 
 
     return (
-        <ContainerSimple className="">
-            <QuantitySelector onChange={HandleQuantityChange} value={0} />
-            <VariantSelector
-                label="Size"
-                options={["S", "M", "L", "XL"]}
-                value={selection.variants.size}
-                onChange={(v) => updateVariants("size", v)}
-            />
-            <VariantSelector
-                label="Color"
-                options={["Black", "White", "Blue"]}
-                value={selection.variants.color}
-                onChange={(v) => updateVariants("color", v)}
-            />
-            <AddToCartButton product={product} onAdd={handleSubmit} />
+        <ContainerSimple className="gap-3">
+
+            <GlassShowcase>
+                <QuantitySelector
+                    onChange={HandleQuantityChange}
+                    value={productQuantity}
+                    classNames="w-full justify-between glassmorph glass-noise rounded-xl"
+                />
+            </GlassShowcase>
+
+            <Grid>
+                <VariantSelector
+                    label="Size"
+                    options={["S", "M", "L", "XL"]}
+                    value={selection.variants.size}
+                    onChange={(v) => updateVariants("size", v)}
+                    classNames="col-12 lg:col-6"
+                />
+                <VariantSelector
+                    label="Color"
+                    options={["Black", "White", "Blue"]}
+                    value={selection.variants.color}
+                    onChange={(v) => updateVariants("color", v)}
+                    classNames="col-12 lg:col-6"
+                />
+            </Grid>
+
+            <AddToCartButton product={product} onAdd={validateCartItem} />
 
         </ContainerSimple>
     )

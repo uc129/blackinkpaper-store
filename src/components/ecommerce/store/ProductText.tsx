@@ -21,7 +21,7 @@ export function ProductText({ title, description, currentPrice, oldPrice, curren
     if (large) {
         return (
             <div className={`py-4 flex flex-col gap-4 ${classNames}`}>
-                <Heading size="title" className={`${rest.titleClassNames}`}>{title}</Heading>
+                <Heading  size="title" className={`${rest.titleClassNames}`}>{title}</Heading>
                 {description && <Heading as="h3" size="caption" className={`${rest.descriptionClassNames}`}> {description} </Heading>}
                 {displayPrice && <PriceTag large price={currentPrice} previous={oldPrice} currencyCode={currencyCode || "INR"} notificationText={rest.notificationText} />}
             </div>
@@ -30,7 +30,7 @@ export function ProductText({ title, description, currentPrice, oldPrice, curren
 
     return (
         <div className={`py-4 flex flex-col gap-3 ${classNames}`}>
-            <h2 className={`${rest.titleClassNames}`}>{title}</h2>
+            <Heading  size="title" className={`${rest.titleClassNames}`}>{title}</Heading>
             {description && <article className={`${rest.descriptionClassNames}`}> {description} </article>}
             {displayPrice && <PriceTag price={currentPrice} previous={oldPrice} currencyCode={currencyCode || "INR"} notificationText={rest.notificationText} />}
         </div>

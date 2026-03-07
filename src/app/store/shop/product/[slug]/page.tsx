@@ -13,12 +13,10 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
     const { slug } = await params;
     const product = mockProducts.find(p => p.slug === slug);
 
-
-
-
     if (!product) {
         notFound();
     }
+
     const galleryImages: GalleryImage[] = product.allImageUrls.map(url => ({
         src: url,
         thumb: url,
@@ -34,7 +32,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
 
     return (
-        <Page className=""> {/* dont use items-center as center is too far center; use margin-top on child if required */}
+        <Page className="items-center"> {/* dont use items-center as center is too far center; use margin-top on child if required */}
 
             <ContainerSimpleInLine className="w-full mx-auto gap-6 sm:gap-12 ">
                 {/* Image Gallery */}
@@ -43,7 +41,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                 </Section>
 
                 {/* Add To Cart */}
-                <Section customPadding={{ l: "0", r: "0", t: "0", b: "0" }} className=" flex flex-col md:mt-24 lg:mt-44 gap-14">
+                <Section customPadding={{ l: "0", r: "0", t: "0", b: "0" }} 
+                className="flex flex-col">
                     <ProductText large classNames=""
                         title={product.name}
                         titleClassNames="text-title-sm text-text-primary font-semibold line-clamp-2"
@@ -52,7 +51,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                         displayPrice
                         currencyCode="INR"
                         description={product.description}
-                        notificationText="SALE" />
+                        notificationText="SALE" 
+                        />
                     <HandleCartLogicComponent product={product} />
                 </Section>
 

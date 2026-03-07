@@ -1,13 +1,16 @@
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 
-if (!BASE_URL) {
-    throw new Error("NEXT_PUBLIC_API_URL is not defined");
-}
+
 
 async function request<T>(
     endpoint: string,
     options: RequestInit = {}
 ): Promise<T> {
+
+    if (!BASE_URL) {
+        return null as T;
+    }
+
     const res = await fetch(`${BASE_URL}${endpoint}`, {
         credentials: "include",
         headers: {

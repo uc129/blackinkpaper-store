@@ -15,8 +15,7 @@ const headingStyles = {
     display: "text-display md:text-display",
     displayCaption: "text-display-caption",
     displayThin: "text-display-thin",
-
-    title: "text-title text-3xl lg:text-4xl 2xl:text-5xl",
+    title: "text-title",
     titleSmall: "text-title-sm text-xl lg:text-2xl 2xl:text-3xl",
     titleLarge: "text-title-lg text-5xl lg:text-6xl 2xl:text-7xl"
 
