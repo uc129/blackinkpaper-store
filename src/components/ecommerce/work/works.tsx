@@ -14,9 +14,9 @@ export default function WorkProjectsGrid() {
     return (
         <ContainerSimple>
             <Heading size="title" className="breathe-room">Works</Heading>
-            <div className="mx-auto grid gap-0 items-center align-center ">
+            <div className="mx-auto grid gap-0 items-center align-center w-full">
                 {activeCategories.map(cat => (
-                    <div key={cat.id} className="col-12 lg:col-6 2xl:col-4 mb-12">
+                    <div key={cat.id} className="col-12 lg:col-6 2xl:col-4 mb-12 ">
                         <CardSimple
                             linkHref={`/works/categories/${cat.slug}`}
                             imageSrc={cat.coverImageUrl!}

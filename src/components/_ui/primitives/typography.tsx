@@ -19,5 +19,5 @@ export const TextLabel = ({ className, ...props }: React.LabelHTMLAttributes<HTM
 );
 
 export const TextDescription = ({ className, ...props }: React.LabelHTMLAttributes<HTMLParagraphElement>) => (
-  <p className={cn("text-sm text-center font-semibold leading-relaxed breathe-room-sm", className)} {...props} />
+  <p className={cn("text-sm text-center font-semibold leading-relaxed breathe-room", className)} {...props} />
 );

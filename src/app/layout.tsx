@@ -34,17 +34,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+        <Providers>
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${mplus2.variable} antialiased font-display`}
       >
         <Navbar />
         <main className="pt-8">
-          <Providers>
+        
             {children}
-          </Providers>
         </main>
         <Footer />
       </body>
+      </Providers>
     </html>
   );
 }

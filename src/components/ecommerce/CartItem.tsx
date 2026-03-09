@@ -10,23 +10,19 @@ export function CartItem({ item, onQtyChange, onRemove }: { item: any, onQtyChan
             </div>
 
             <div className="flex flex-col gap-space-2 flex-1">
+
                 <h3 className="text-body-sm text-text-primary font-medium">
                     {item.product.title}
                 </h3>
 
-                <PriceTag price={item.product.price} previous={undefined} />
+                <PriceTag currencyCode="INR" price={item.product.price} previous={item.product.price-100} />
 
-                <QuantitySelector
-                    value={item.quantity}
-                    onChange={(q: number) => onQtyChange(item.product, q)}
-                />
+                <QuantitySelector value={item.quantity} onChange={(q: number) => onQtyChange(item.product, q)}/>
 
-                <button
-                    onClick={() => onRemove(item.product)}
-                    className="text-body-xs text-accent font-medium mt-space-2"
-                >
+                <button onClick={() => onRemove(item.product)} className="text-body-xs text-accent font-medium mt-space-2">
                     Remove
                 </button>
+
             </div>
         </div>
     );

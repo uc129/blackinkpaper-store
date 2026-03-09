@@ -15,8 +15,7 @@ export function ProductCard({ product }: { product: ProductType }) {
                     src={product.coverImageUrl}
                     alt={product.name}
                     className=""
-                    width={800}
-                    height={800}
+                   fill
                 />
 
             </div>

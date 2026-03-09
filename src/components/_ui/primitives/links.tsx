@@ -109,7 +109,7 @@ export const NavLink = ({
                 )}
             </span>
 
-            {sup && (
+            {sup && sup!=="" && (
                 <span className="text-[9px] translate-y-[-0.4em] opacity-70">
                     {brackets ? `(${sup})` : sup}
                 </span>

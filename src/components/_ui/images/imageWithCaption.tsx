@@ -14,6 +14,7 @@ type Props = {
     alt: string
     width?: number
     height?: number
+    fill?:boolean
 
     caption?: string
     captionAlign?: CaptionAlign
@@ -30,8 +31,6 @@ type Props = {
 export function ImageWithCaption({
     src,
     alt,
-    width,
-    height,
     caption,
     captionAlign = "center",
     captionSize = "1rem",
@@ -73,9 +72,8 @@ export function ImageWithCaption({
             alt={didError ? "Error loading image" : alt}
             // fill={true}
             // sizes="100vw"
-            width={width}
-            height={height}
-            className="rounded-lg"
+            fill
+            className="rounded-lg "
             onError={() => setDidError(true)}
             priority={false}
             onClick={handleClick}

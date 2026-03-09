@@ -3,6 +3,8 @@ import { useState, useEffect, useRef } from 'react';
 import { Menu, X, GalleryHorizontalEnd, Cog } from 'lucide-react';
 import { Button } from '@/components/_ui/primitives/button';
 import { NavLink } from '@/components/_ui/primitives/links';
+import { useAppSelector } from '@/lib/hooks/redux-hooks';
+
 
 
 const Navbar = () => {
@@ -33,6 +35,9 @@ const Navbar = () => {
         document.addEventListener('keydown', h); return () => document.removeEventListener('keydown', h)
     }, [open]);
 
+    const { cartItems } = useAppSelector((state) => state.cart);
+    const totalItemsCount = cartItems.reduce((total, item) => {return total + item.quantity;}, 0);
+
     return (<>
         <nav className="sticky top-0 z-40  backdrop-blur-md bg-background/80 supports-backdrop-filter:bg-background/60 transition-all duration-300">
             <div className="layout-navbar flex items-center justify-between">
@@ -42,12 +47,12 @@ const Navbar = () => {
                     <div className="hidden md:flex gap-8">
                         <NavLink text="Store" href="/store" sup='1' />
                         <NavLink text="Black & White" href="/works/categories/black-and-white" />
-                        <NavLink text="Cityscapes" href="/works/categories/cityscapes" />
+                        <NavLink text="CityScapes" href="/works/categories/cityscapes" />
                         <NavLink text="Commissions" href="/works/categories/commissions" />
                         <NavLink text="Travel Art" href="/works/categories/travel-art" />
                         <NavLink text="About" href="/about" />
                         <NavLink text="Contact" href="/contact" />
-                        <NavLink text="Cart" href="/cart" />
+                        <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -64,7 +69,7 @@ const Navbar = () => {
         {open && (
             <div className="fixed inset-0 z-50 bg-background">
                 <div className="layout py-6 flex items-center justify-between">
-                    <div className="font-bold tracking-wider text-xl">THE CANVAS BLOG.</div>
+                    <div className="font-bold tracking-wider text-xl">BLACKINKPAPER</div>
                     <Button variant="icon" onClick={() => setOpen(false)} aria-label="Close menu">
                         <X size={20} />
                     </Button>
@@ -72,11 +77,14 @@ const Navbar = () => {
 
                 <div className="layout mt-12">
                     <div className="flex flex-col gap-6 text-h3">
-                        <NavLink text="Trending" href="/blog/trending" />
-                        <NavLink text="Art" href="/blog/art" />
-                        <NavLink text="Design" href="/blog/design" />
-                        <NavLink text="Music" href="/blog/music" />
-                        <NavLink text="Podcast" href="/blog/podcast" sup="V2" />
+                       <NavLink text="Store" href="/store" sup='1' />
+                        <NavLink text="Black & White" href="/works/categories/black-and-white" />
+                        <NavLink text="CityScapes" href="/works/categories/cityscapes" />
+                        <NavLink text="Commissions" href="/works/categories/commissions" />
+                        <NavLink text="Travel Art" href="/works/categories/travel-art" />
+                        <NavLink text="About" href="/about" />
+                        <NavLink text="Contact" href="/contact" />
+                        <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
                     </div>
                 </div>
             </div>

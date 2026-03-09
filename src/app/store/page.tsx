@@ -32,13 +32,13 @@ const printProductsGrid = printWorksProducts.length > 0 ? <ProductGrid products=
 export default function StoreLandingPage() {
     return (
         <Page>
-            <Heading size="title" className="text-center font-bold breathe-room">Blackinkpaper Store</Heading>
+            <Heading size="title" className="text-center font-bold breathe-room">BlackInkPaper Store</Heading>
             <Section className="mx-auto">
                 <ContainerSimple className="gap-24 my-12">
-                    <ContainerSimpleInLine className="gap-32">
+                    <div className="flex gap-32 pb-3 border-b ">
                         <NavLink href="/store/shop/category/originals" text="Original" linkSize="md" />
                         <NavLink href="/store/shop/category/prints" text="Prints" linkSize="md" />
-                    </ContainerSimpleInLine>
+                    </div>
                     <ContainerSimple className=" ">
                         {allProductsGrid}
                     </ContainerSimple>

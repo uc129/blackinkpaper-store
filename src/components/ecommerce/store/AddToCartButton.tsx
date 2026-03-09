@@ -8,10 +8,11 @@ import { useState } from "react"
 
 type Props = {
     product: ProductType,
-    onAdd?: (e: React.MouseEvent) => boolean
+    onAdd?: (e: React.MouseEvent) => boolean,
+    quantity:number
 }
 
-export default function AddToCartButton({ product, onAdd }: Props) {
+export default function AddToCartButton({ product,quantity, onAdd }: Props) {
     const dispatch = useAppDispatch()
     const [added, setAdded] = useState(false)
 
@@ -23,9 +24,10 @@ export default function AddToCartButton({ product, onAdd }: Props) {
             id: product.id,
             name: product.name,
             price: product.price_rupees,
-            quantity: 1,
+            quantity: quantity,
             currencyCode: "INR"
-        }))
+        }));
+
         setAdded(true)
         setTimeout(() => {
             setAdded(false)

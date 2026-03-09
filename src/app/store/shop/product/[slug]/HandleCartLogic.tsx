@@ -10,7 +10,7 @@ import { useEffect, useState } from "react";
 
 
 export default function HandleCartLogicComponent({ product }: { product: ProductType }) {
-    const [productQuantity, setProductQuantity] = useState(0);
+    const [productQuantity, setProductQuantity] = useState(1);
     const [hasVariants, setHasVariants] = useState(false);
     const [selection, setSelection] = useState({
         quantity: 1,
@@ -85,7 +85,7 @@ export default function HandleCartLogicComponent({ product }: { product: Product
                 />
             </Grid>
 
-            <AddToCartButton product={product} onAdd={validateCartItem} />
+            <AddToCartButton product={product} onAdd={validateCartItem} quantity={productQuantity} />
 
         </ContainerSimple>
     )

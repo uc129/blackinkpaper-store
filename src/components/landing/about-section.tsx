@@ -1,3 +1,6 @@
+import Section from "../_ui/containers/base/section";
+import {ContainerSimpleInLine} from "../_ui/containers/container-simple";
+
 import { ImageWithFallback } from "../_ui/images/imagewithfallback";
 import { Button } from "../_ui/primitives/button";
 import { Heading } from "../_ui/primitives/heading";
@@ -7,9 +10,10 @@ import { mockPicSumImages } from "@/mocks/images/picsum";
 export default function AboutSection() {
 
     return (
-        <div className=" w-full mx-auto grid items-center gap-16 lg:gap-44 py-12">
+        <Section className=" ">
 
-            <div className="col-12 2xl:col-5">
+           <ContainerSimpleInLine className="justify-between">
+             <div className="col-12 2xl:col-5">
 
                 <ImageWithFallback src={mockPicSumImages[0]}
                     alt="Artist Image"
@@ -20,7 +24,7 @@ export default function AboutSection() {
 
             <div className="col-12 2xl:col-7 flex flex-col gap-8 items-start w-fit">
                 <div className="flex flex-col gap-8 items-start">
-                    <Heading size="title" className="font-bold">About The Artist</Heading>
+                    <Heading size="titleSmall" className="font-bold">About The Artist</Heading>
                     <p className="max-w-2xl mx-auto text-lg text-left text-gray-700 " >
                         Utkarsh Chaudhary, the creative force behind BlackInk Illustration,
                         is a passionate artist specializing in digital art and illustration.
@@ -29,7 +33,8 @@ export default function AboutSection() {
                 </div>
                 <Button variant={'pill'} size={'pill_lg'} href="/about"> Learn More </Button>
             </div>
+            </ContainerSimpleInLine>
 
-        </div>
+        </Section>
     )
 }   

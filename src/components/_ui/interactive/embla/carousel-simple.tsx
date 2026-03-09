@@ -88,9 +88,9 @@ export default function EmblaCarousel({ slides, options, delay, onImageClick, ac
                                 <ImageWithCaption
                                     src={slide.src}
                                     alt={slide.alt || ''}
-                                    width={840}
-                                    height={800}
-                                    className="embla__slide__img"
+                                    
+                                    fill
+                                    className="embla__slide__img min-h-96"
                                     caption={slide.alt || ''}
                                     onClick={(event) => onImageClick && onImageClick(index, slide, event)}
                                 // priority={index === 0}

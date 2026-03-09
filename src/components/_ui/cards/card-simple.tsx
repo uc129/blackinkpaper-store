@@ -19,13 +19,14 @@ export type CardSimpleProps = {
     showText?: boolean;
     showTitle?: boolean;
     showDescription?: boolean;
+    height?:boolean
 }
 
 export default function CardSimple(props: CardSimpleProps) {
     return (
-        <a href={props.linkHref} className="product-cat-card-link w-full ">
-            <article className="product-cat-card">
-                <ImageWithFallback src={props.imageSrc} width={800} height={300} alt={props.title} />
+        <a href={props.linkHref} className="product-cat-card-link ">
+            <article className="product-cat-card relative min-h-96">
+                <ImageWithFallback src={props.imageSrc} fill alt={props.title} className="" />
                 {props.showTitle == null || props.showTitle == true
                     &&
                     <div className="pt-4">
