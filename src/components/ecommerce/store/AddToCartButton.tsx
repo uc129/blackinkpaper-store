@@ -2,62 +2,59 @@
 
 import { ProductType } from "@/lib/api/ecommerce/types/product-type"
 import { useAppDispatch } from "@/lib/hooks/redux-hooks"
-import { addItem } from "@/lib/redux/store/slices/cartSlice"
+import { addItem, SelectedVariant } from "@/lib/redux/store/slices/cartSlice"
 import { useState } from "react"
 
-
 type Props = {
-    product: ProductType,
-    onAdd?: (e: React.MouseEvent) => boolean,
-    quantity:number
+    product: ProductType;
+    onAdd?: (e: React.MouseEvent) => boolean;
+    quantity: number;
+    selectedVariants?: SelectedVariant[]
 }
 
-export default function AddToCartButton({ product,quantity, onAdd }: Props) {
+export default function AddToCartButton({ product, quantity, onAdd, selectedVariants }: Props) {
     const dispatch = useAppDispatch()
     const [added, setAdded] = useState(false)
 
     const handleAdd = (event: React.MouseEvent) => {
-        const check = onAdd ? onAdd(event) : true
-        if (!check) return;
+        // Validation check from parent
+        const isValidated = onAdd ? onAdd(event) : true
+        if (!isValidated) return;
+
+        // Converting the Record<string, string> to the SelectedVariant[] format 
+        // expected by the Redux slice
+        const formattedVariants = selectedVariants ? Object.entries(selectedVariants).map(([label, choice]) => ({label,choice})): [];
 
         dispatch(addItem({
             id: product.id,
             name: product.name,
-            price: product.price_rupees,
+            price:product.price_rupees,
             quantity: quantity,
-            currencyCode: "INR"
+            currencyCode: "INR",
+            selectedVariants: selectedVariants,
+            basePrice:product.base_price_rupees!,
         }));
 
         setAdded(true)
-        setTimeout(() => {
-            setAdded(false)
-        }, 1500);
+        setTimeout(() => setAdded(false), 1500);
     }
 
     return (
         <button
             onClick={handleAdd}
             className={`relative overflow-hidden px-6 py-3 rounded-lg font-medium transition-all duration-300
-      ${added
+                ${added
                     ? "bg-green-600 text-white"
                     : "bg-black text-white hover:bg-neutral-800"
                 }`}
         >
-
-            <span
-                className={`transition-opacity duration-200 ${added ? "opacity-0" : "opacity-100"
-                    }`}
-            >
+            <span className={`transition-opacity duration-200 ${added ? "opacity-0" : "opacity-100"}`}>
                 Add to Cart
             </span>
 
-            <span
-                className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${added ? "opacity-100" : "opacity-0"
-                    }`}
-            >
+            <span className={`absolute inset-0 flex items-center justify-center transition-opacity duration-200 ${added ? "opacity-100" : "opacity-0"}`}>
                 ✓ Added
             </span>
-
         </button>
     )
 }

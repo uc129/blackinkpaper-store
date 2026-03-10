@@ -2,6 +2,17 @@ import { ProductShopCategory } from "@/mocks/blog/mock-product-data";
 import { ProductCategoryType } from "./product-categories";
 import { ProductSubCategoryType } from "./product-subcategory-type";
 
+export type ProductVariantOption = {
+    value: string;
+    priceModifier?: number; // e.g., 50 (adds 50 to base price)
+    absolutePrice?: number; // e.g., 1050 (overrides base price)
+}
+
+export type ProductVariant ={
+    label:string,
+    options:ProductVariantOption[]
+}
+
 export type ProductType = {
     id: number;
     product_id: string;
@@ -9,6 +20,8 @@ export type ProductType = {
     name: string;
     print_name: string;
     description: string;
+    base_price_rupees?:number
+    base_price_paisa?:number
     price_rupees: number;
     price_paisa: number;
     categoryId: number;
@@ -20,12 +33,8 @@ export type ProductType = {
     isFeatured: boolean;
     slug: string;
     productShopCategory: ProductShopCategory;
-    variants?: Record<string, string>
+    variants?:ProductVariant[]
 }
-
-
-
-
 
 export type ProductDetailsType = ProductType & {
     category: ProductCategoryType;

@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { NavLink } from "./_ui/primitives/links";
+import { NavLink } from "../components/_ui/primitives/links";
 
 export default function Footer() {
     return (
@@ -10,7 +10,7 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="relative bg-[#0b0b0d] text-neutral-400 border-t border-neutral-800 overflow-hidden"
+            className="relative bg-[#0b0b0d] text-neutral-400 border-t border-neutral-800 overflow-hidden mt-8"
         >
             <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
 

@@ -93,7 +93,7 @@
   --grid-columns: 12;
   --grid-gutter: var(--space-4); /* 16px */
   --grid-margin: var(--space-5); /* 24px */
-  --container-max: 1540px;
+  --container-max: 1840px;
   --page-max: 1840px;
   --navbar-height: 4rem;
 
@@ -383,8 +383,9 @@ body {
 
 .layout-navbar {
   max-width: var(--container-max);
+  width:100%;
   margin: 0 auto;
-  padding: 2rem 0;
+  padding-inline: var(--padding);
 }
 .layout {
   min-height: var(--page-height);

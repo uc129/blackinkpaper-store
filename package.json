@@ -10,9 +10,9 @@
     "format": "biome format --write",
     "clean:all": "rimraf node_modules package-lock.json .next .turbo  out && npm install",
     "clean": "rimraf node_modules package-lock.json .next .turbo  out && npm install"
-
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.2.2",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
     "@reduxjs/toolkit": "^2.11.2",
@@ -26,14 +26,16 @@
     "lightgallery": "^2.9.0",
     "lucide-react": "^0.559.0",
     "next": "^16.1.6",
+    "razorpay": "^2.9.6",
     "react": "19.2.0",
     "react-dom": "19.2.0",
+    "react-hook-form": "^7.71.2",
     "react-redux": "^9.2.0",
     "redux-state-sync": "^3.1.4",
     "shiki": "^3.19.0",
     "tailwind-merge": "^3.4.0",
     "three": "^0.182.0",
-    "zod": "^4.1.13"
+    "zod": "^4.3.6"
   },
   "devDependencies": {
     "@biomejs/biome": "2.2.0",

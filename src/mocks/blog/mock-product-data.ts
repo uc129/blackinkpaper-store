@@ -119,8 +119,15 @@ export const mockProducts: ProductType[] = [
         ],
         isAvailable: true,
         isFeatured: true,
-        slug: "dont-feed-the-pandas",
-        productShopCategory: "print"
+        slug: "don't-feed-the-pandas",
+        productShopCategory: "print",
+        variants:[
+            // {label:"Size",options:["SS", "MM", "LL", "XXLL"]},
+            // {label:"Color", options:["BLK", "WHT", "BLU"]}
+            {label:"SIZE", options:[{value:"SS", priceModifier:-250},{value:"MM", priceModifier:-50},{value:"LL", priceModifier:250},{value:"XLL", priceModifier:500}]},
+            {label:"COLOR", options:[{value:"RED", priceModifier:-250},{value:"BLUE", priceModifier:-50},{value:"GREEN", priceModifier:250},{value:"WHITE", priceModifier:500}]}
+
+        ]
     },
     {
         id: 2,
