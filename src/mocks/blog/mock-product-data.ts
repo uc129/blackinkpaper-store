@@ -106,8 +106,11 @@ export const mockProducts: ProductType[] = [
         name: "Don't Feed the Pandas",
         print_name: "Don't Feed the Pandas",
         description: "A vibrant color print that captures the interplay of light and shadow in a bustling city.",
-        price_rupees: 4500.00,
-        price_paisa: 450000.00,
+        base_price:4500.00,
+        final_price:4500.00,
+        base_price_low_denomination: 450000.00,
+        final_price_low_denomination:450000.00,
+        price_currency_code:"INR",
         categoryId: 1,
         subCategoryId: 1,
         coverImageUrl: "https://picsum.photos/2400/1800?random=1",
@@ -121,12 +124,10 @@ export const mockProducts: ProductType[] = [
         isFeatured: true,
         slug: "don't-feed-the-pandas",
         productShopCategory: "print",
+        isUsingStandardVariants:false,
         variants:[
-            // {label:"Size",options:["SS", "MM", "LL", "XXLL"]},
-            // {label:"Color", options:["BLK", "WHT", "BLU"]}
             {label:"SIZE", options:[{value:"SS", priceModifier:-250},{value:"MM", priceModifier:-50},{value:"LL", priceModifier:250},{value:"XLL", priceModifier:500}]},
             {label:"COLOR", options:[{value:"RED", priceModifier:-250},{value:"BLUE", priceModifier:-50},{value:"GREEN", priceModifier:250},{value:"WHITE", priceModifier:500}]}
-
         ]
     },
     {
@@ -136,8 +137,11 @@ export const mockProducts: ProductType[] = [
         name: "Sunset Over the Himalayas",
         print_name: "Sunset Over the Himalayas",
         description: "A stunning print that captures the breathtaking beauty of a sunset over the Himalayan mountains.",
-        price_rupees: 6000.00,
-        price_paisa: 600000.00,
+        base_price:6500.00,
+        final_price:6500.00,
+        base_price_low_denomination: 650000.00,
+        final_price_low_denomination:650000.00,
+        price_currency_code:"INR",
         categoryId: 4,
         subCategoryId: 2,
         coverImageUrl: "https://picsum.photos/1200/1800?random=1",
@@ -151,7 +155,9 @@ export const mockProducts: ProductType[] = [
         isAvailable: true,
         isFeatured: false,
         slug: "sunset-over-the-himalayas",
-        productShopCategory: "print"
+        productShopCategory: "print",
+        isUsingStandardVariants:true,
+
 
     },
     {
@@ -161,8 +167,11 @@ export const mockProducts: ProductType[] = [
         name: "Custom Portrait of a Loved One",
         print_name: "Custom Portrait of a Loved One",
         description: "A personalized commissioned piece that captures the essence of a loved one in a unique and artistic way.",
-        price_rupees: 10000.00,
-        price_paisa: 1000000.00,
+        base_price:999.00,
+        final_price:999.00,
+        base_price_low_denomination: 99900.00,
+        final_price_low_denomination:99900.00,
+        price_currency_code:"INR",
         categoryId: 3,
         subCategoryId: 2,
         coverImageUrl: "https://picsum.photos/1200/1800?random=1",
@@ -176,7 +185,9 @@ export const mockProducts: ProductType[] = [
         isAvailable: true,
         isFeatured: true,
         slug: "custom-portrait-of-a-loved-one",
-        productShopCategory: "digital"
+        productShopCategory: "digital",
+        isUsingStandardVariants:true,
+
 
     },
     {
@@ -186,8 +197,11 @@ export const mockProducts: ProductType[] = [
         name: "Night Lights of New York",
         print_name: "Night Lights of New York",
         description: "A vibrant color print that captures the dazzling night lights of New York City.",
-        price_rupees: 5500.00,
-        price_paisa: 550000.00,
+        base_price:1800.00,
+        final_price:1800.00,
+        base_price_low_denomination: 180000.00,
+        final_price_low_denomination:180000.00,
+        price_currency_code:"INR",
         categoryId: 2,
         subCategoryId: 1,
         coverImageUrl: "https://picsum.photos/1200/1800?random=1",
@@ -201,7 +215,9 @@ export const mockProducts: ProductType[] = [
         isAvailable: true,
         isFeatured: false,
         slug: "night-lights-of-new-york",
-        productShopCategory: "digital"
+        productShopCategory: "digital",
+        isUsingStandardVariants:true,
+
 
     }
 ]

@@ -32,7 +32,7 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
 
 
     return (
-        <Page className="items-center"> {/* dont use items-center as center is too far center; use margin-top on child if required */}
+        <Page className="items-center"> 
 
             <ContainerSimpleInLine className="w-full mx-auto gap-6 sm:gap-12 ">
                 {/* Image Gallery */}
@@ -46,8 +46,8 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     <ProductText large classNames=""
                         title={product.name}
                         titleClassNames="text-title-sm text-text-primary font-semibold line-clamp-2"
-                        currentPrice={product.price_rupees}
-                        oldPrice={product.price_rupees - 1000}
+                        currentPrice={product.base_price!}
+                        oldPrice={product.base_price! - 1000}
                         displayPrice
                         currencyCode="INR"
                         description={product.description}

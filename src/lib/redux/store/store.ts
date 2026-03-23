@@ -1,9 +1,11 @@
 import { configureStore, combineReducers } from '@reduxjs/toolkit'
 import { Config } from 'redux-state-sync';
 import cartReducer  from "./slices/cartSlice"
+import uiReducer from "./slices/uiSlice"
 
 const rootReducer = combineReducers({
   cart: cartReducer,
+  ui:uiReducer
   // ... other reducers
 });
 

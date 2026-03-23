@@ -6,6 +6,8 @@ import { makeStore, AppStore } from "@/lib/redux/store/store";
 import { useEffect, useRef } from "react";
 import { Provider } from "react-redux";
 import { initMessageListener } from "redux-state-sync";
+import PageToolbar from "./page-toolbar";
+import Toolbar from "./toolbar";
 
 
 export  function StoreProvider({ children }: { children: React.ReactNode }) {
@@ -45,10 +47,19 @@ export  function StoreProvider({ children }: { children: React.ReactNode }) {
     return <Provider store={storeRef.current}>{children}</Provider>;
 }
 
+const handleToolbarEvents = (type: string) => {
+    if (type === 'save') {
+        console.log("Saving blog post to ASP.NET Backend...");
+    }
+  };
+
+
 export default function Providers({ children }: { children: React.ReactNode }) {
     return (
         <>
-            <StoreProvider>{children}</StoreProvider>
+            <StoreProvider>
+                {children}
+            </StoreProvider>
         </>
     );
 }

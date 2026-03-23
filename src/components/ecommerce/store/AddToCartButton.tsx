@@ -21,18 +21,14 @@ export default function AddToCartButton({ product, quantity, onAdd, selectedVari
         const isValidated = onAdd ? onAdd(event) : true
         if (!isValidated) return;
 
-        // Converting the Record<string, string> to the SelectedVariant[] format 
-        // expected by the Redux slice
-        const formattedVariants = selectedVariants ? Object.entries(selectedVariants).map(([label, choice]) => ({label,choice})): [];
-
         dispatch(addItem({
             id: product.id,
             name: product.name,
-            price:product.price_rupees,
+            price:product.final_price!,
             quantity: quantity,
             currencyCode: "INR",
             selectedVariants: selectedVariants,
-            basePrice:product.base_price_rupees!,
+            basePrice:product.base_price!,
         }));
 
         setAdded(true)

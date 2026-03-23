@@ -39,7 +39,7 @@ const Navbar = () => {
     const totalItemsCount = cartItems.reduce((total, item) => {return total + item.quantity;}, 0);
 
     return (<>
-        <nav className="sticky top-0 z-40  backdrop-blur-md bg-background/80 supports-backdrop-filter:bg-background/60 transition-all duration-300">
+        <nav id="main-navbar" className="sticky top-0 z-40 py-4  backdrop-blur-md bg-background/80 supports-backdrop-filter:bg-background/60 transition-all duration-300">
             <div className="layout-navbar flex items-center justify-between">
                 <NavLink href="/" text='BLACKINKPAPER ILLUSTRATION' linkSize='xl' boldVariant='bold' />
 
@@ -53,6 +53,7 @@ const Navbar = () => {
                         <NavLink text="About" href="/about" />
                         <NavLink text="Contact" href="/contact" />
                         <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
+                        <NavLink text="Admin" href="/admin" />
                     </div>
 
                     <div className="flex items-center gap-3">
@@ -67,7 +68,7 @@ const Navbar = () => {
 
 
         {open && (
-            <div className="fixed inset-0 z-50 bg-background">
+            <div id="main-navbar-mobile" className="fixed inset-0 z-50 bg-background">
                 <div className="layout py-6 flex items-center justify-between">
                     <div className="font-bold tracking-wider text-xl">BLACKINKPAPER</div>
                     <Button variant="icon" onClick={() => setOpen(false)} aria-label="Close menu">
@@ -85,6 +86,7 @@ const Navbar = () => {
                         <NavLink text="About" href="/about" />
                         <NavLink text="Contact" href="/contact" />
                         <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
+                        <NavLink text="Admin" href="/admin" />
                     </div>
                 </div>
             </div>

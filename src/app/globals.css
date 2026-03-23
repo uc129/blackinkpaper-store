@@ -376,6 +376,10 @@
 
 }
 
+html{
+zoom:0.80;
+}
+
 body {
   background-color: var(--primary);
   overflow-x: hidden;

@@ -1,9 +1,7 @@
+import { formatPriceToIntl } from "@/lib/utils";
 import { ContainerSimpleInLine, Grid } from "../_ui/containers/container-simple";
 
-const formatPriceToIntl = (amount: number, currencyCode: string) => new Intl.NumberFormat("en-IN", {
-    style: "currency",
-    currency: currencyCode || "INR"
-}).format(amount)
+
 
 
 export function PriceTag({ currencyCode, price, previous, notificationText, large }: { currencyCode: string, price: number; previous?: number, notificationText?: string, large?: boolean }) {

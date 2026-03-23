@@ -1,0 +1,35 @@
+'use client'
+import { ProductType } from "@/lib/api/ecommerce/types/product-type";
+import { useRouter } from "next/navigation";
+import DataTable from "../../../components/admin/masters-datatable";
+import { mockProducts } from "@/mocks/blog/mock-product-data";
+import { createColumnHelper } from "@/components/admin/createColumnHelper";
+
+
+
+export default function AdminProductListPage(){
+const router = useRouter();
+const h = createColumnHelper<ProductType>();
+
+const columns = [
+  h.imageText("Product", "name", "coverImageUrl"),
+  h.text("SKU", "product_id"),
+  h.currency("Price", "base_price", "price_currency_code"),
+  h.badge("Status", "isAvailable", (val) => 
+    val ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
+  ),
+];
+
+  return (
+    <div className="space-y-6">
+      <DataTable 
+        data={mockProducts} // Replace with your ASP.NET API fetch
+        columns={columns}
+        onAdd={() => router.push('/products/new')}
+        onEdit={(p) => router.push(`/products/${p.id}`)}
+        onDelete={(p) => confirm(`Delete ${p.name}?`)}
+        searchPlaceholder="Search by name or SKU..."
+      />
+    </div>
+  );
+}

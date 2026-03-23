@@ -5,6 +5,7 @@ import { removeItem, updateQuantity } from "@/lib/redux/store/slices/cartSlice";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { Button } from "@/components/_ui/primitives/button";
 import { ClientOnly } from "@/components/client-only-helper";
+import Page from "@/components/_ui/containers/base/page";
 
 export default function CartPage() {
   const { cartItems } = useAppSelector((state) => state.cart);
@@ -20,8 +21,8 @@ export default function CartPage() {
   if (cartItems.length === 0) {
     cartContent =  <div className="p-10 text-center text-neutral-500">Your cart is empty.</div>
   }
-  else{
-    cartContent = <ContainerSimple className="max-w-4xl mx-auto py-8">
+  else { cartContent = (
+    <ContainerSimple className="max-w-4xl mx-auto py-8">
       <h1 className="text-2xl font-bold mb-8">Your Shopping Cart</h1>
 
       <div className="flex flex-col gap-8">
@@ -143,11 +144,13 @@ export default function CartPage() {
         </div>
       </div>
     </ContainerSimple>
-  }
+    )}
 
   return (
     <ClientOnly>
-      {cartContent}
+      <Page>
+        {cartContent}
+      </Page>
     </ClientOnly>
     
   );

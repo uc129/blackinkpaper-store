@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50 disabled:pointer-events-none",
+    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50 cursor-pointer disabled:pointer-events-none",
     {
         variants: {
             variant: {
