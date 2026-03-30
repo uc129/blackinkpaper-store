@@ -2,7 +2,7 @@ import { ProductCategoryType } from "@/lib/api/ecommerce/types/product-categorie
 import { ProductSubCategoryType } from "@/lib/api/ecommerce/types/product-subcategory-type"
 import { ProductType } from "@/lib/api/ecommerce/types/product-type"
 
-export type ProductShopCategory = "digital" | "print"
+
 
 export const mockProductCategories: ProductCategoryType[] = [
     {
@@ -65,8 +65,6 @@ export const mockProductCategories: ProductCategoryType[] = [
     },
 
 ]
-
-
 export const mockProductSubCategories: ProductSubCategoryType[] = [
     {
         id: 1,
@@ -96,8 +94,6 @@ export const mockProductSubCategories: ProductSubCategoryType[] = [
 
     }
 ]
-
-
 export const mockProducts: ProductType[] = [
     {
         id: 1,
@@ -128,7 +124,7 @@ export const mockProducts: ProductType[] = [
         variants:[
             {label:"SIZE", options:[{value:"SS", priceModifier:-250},{value:"MM", priceModifier:-50},{value:"LL", priceModifier:250},{value:"XLL", priceModifier:500}]},
             {label:"COLOR", options:[{value:"RED", priceModifier:-250},{value:"BLUE", priceModifier:-50},{value:"GREEN", priceModifier:250},{value:"WHITE", priceModifier:500}]}
-        ]
+        ],
     },
     {
         id: 2,

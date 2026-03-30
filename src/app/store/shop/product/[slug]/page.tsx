@@ -1,6 +1,6 @@
 import Page from "@/components/_ui/containers/base/page";
 
-import { mockProducts } from "@/mocks/blog/mock-product-data";
+import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 import { notFound } from "next/navigation";
 import ProductDetailGallery, { GalleryImage } from "@/components/ecommerce/store/ProductDetailGallery";
 import Section from "@/components/_ui/containers/base/section";

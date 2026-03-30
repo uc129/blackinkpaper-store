@@ -1,5 +1,5 @@
 
-import { mockProductService } from "@/lib/api/ecommerce/products"
+import { mockProductService } from "@/lib/api/ecommerce/services/products-service"
 import CardSimple from "../../_ui/cards/card-simple";
 import { Heading } from "@/components/_ui/primitives/heading";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";

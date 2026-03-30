@@ -4,7 +4,7 @@ import { useState } from "react";
 import { Artwork } from "@/lib/Artwork";
 import EmblaCarouselSimple, { GalleryItem } from "../_ui/interactive/embla/carousel-simple";
 import { Heading } from "../_ui/primitives/heading"
-import { mockProducts } from "@/mocks/blog/mock-product-data"
+import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data"
 import ArtLightboxModal from "../_ui/interactive/modals/art-lightbox-modal";
 import { Button } from "../_ui/primitives/button";
 import { ContainerSimple } from "../_ui/containers/container-simple";

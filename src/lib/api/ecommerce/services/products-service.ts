@@ -1,6 +1,6 @@
-import { apiClient } from "../client";
-import { ProductType } from "./types/product-type"
-import { mockProducts, mockProductCategories, mockProductSubCategories } from "@/mocks/blog/mock-product-data";
+import { apiClient } from "../../client";
+import { ProductType } from "../types/product-type"
+import { mockProducts, mockProductCategories, mockProductSubCategories } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 
 
 export const productService = {

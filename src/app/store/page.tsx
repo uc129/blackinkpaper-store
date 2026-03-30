@@ -1,10 +1,10 @@
 import Page from "@/components/_ui/containers/base/page";
 import Section from "@/components/_ui/containers/base/section";
-import { ContainerSimple, ContainerSimpleInLine } from "@/components/_ui/containers/container-simple";
+import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { Heading } from "@/components/_ui/primitives/heading";
 import { NavLink } from "@/components/_ui/primitives/links";
 import { ProductGrid } from "@/components/ecommerce/ProductGrid";
-import { mockProducts } from "@/mocks/blog/mock-product-data";
+import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 
 const allProductsGrid = <ProductGrid products={mockProducts} hover={true} />;
 
@@ -13,20 +13,6 @@ const originalProductsGrid = originalWorksProducts.length > 0 ? <ProductGrid pro
 // const originalWorksProductsList 
 
 const printWorksProducts = mockProducts.filter(prod => prod.productShopCategory === "print");
-const printProductsGrid = printWorksProducts.length > 0 ? <ProductGrid products={printWorksProducts} /> : <Heading size={"h4"}>No Print Works Available</Heading>;
-
-
-// const tabItems: TabItem[] = [
-//     {
-//         label: "Original Works",
-//         value: "original-works-tab",
-//         content: originalProductsGrid
-//     },
-//     {
-//         label: "Print Works",
-//         value: "print-works-tab",
-//         content: printProductsGrid
-//     }]
 
 
 export default function StoreLandingPage() {

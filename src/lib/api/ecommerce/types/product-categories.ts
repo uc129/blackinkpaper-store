@@ -9,3 +9,16 @@ export type ProductCategoryType = {
     slug: string;
     coverImageUrl?: string;
 }
+
+export type ProductSubCategoryType = {
+    id: number;
+    categoryId: number;
+    name_code: string;
+    name: string;
+    print_name: string;
+    description: string;
+    isActive: boolean;
+    isFeatured: boolean;
+    slug: string;
+    coverImageUrl?: string;
+}
