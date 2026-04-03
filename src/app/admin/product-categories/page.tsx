@@ -12,9 +12,9 @@ const router = useRouter();
 const h = createColumnHelper<ProductCategoryType>();
 
 const columns = [
-  h.imageText("Product Category", "name", "coverImageUrl"),
-  h.text("Cat", "name_code"),
-  h.badge("Active", "isActive", (val) => 
+  h.imageText("Product Category", (p) => p.print_name, (p) => p.coverImageUrl || '/placeholder-category.png'),
+  h.text("Cat", (p) => p.name_code),
+  h.badge("Active", (p) => p.isActive, (val) => 
     val ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
   ),
 ];
