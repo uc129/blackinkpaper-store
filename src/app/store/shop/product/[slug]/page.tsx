@@ -17,15 +17,15 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
         notFound();
     }
 
-    const galleryImages: GalleryImage[] = product.allImageUrls.map(url => ({
+    const galleryImages: GalleryImage[] = product.media.allImageUrls.map(url => ({
         src: url,
         thumb: url,
         alt: product.name
     }));
 
     galleryImages.unshift({
-        src: product.coverImageUrl,
-        thumb: product.coverImageUrl,
+        src: product.media.coverImageUrl,
+        thumb: product.media.coverImageUrl,
         alt: product.name
     });
 
@@ -46,11 +46,11 @@ export default async function ProductDetailPage({ params }: { params: Promise<{ 
                     <ProductText large classNames=""
                         title={product.name}
                         titleClassNames="text-title-sm text-text-primary font-semibold line-clamp-2"
-                        currentPrice={product.base_price!}
-                        oldPrice={product.base_price! - 1000}
+                        currentPrice={product.pricing.base_price!}
+                        oldPrice={product.pricing.base_price! - 1000}
                         displayPrice
                         currencyCode="INR"
-                        description={product.description}
+                        description={product.content.description}
                         notificationText="SALE" 
                         />
                     <HandleCartLogicComponent product={product} />

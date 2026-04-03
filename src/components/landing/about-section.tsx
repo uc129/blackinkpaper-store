@@ -4,7 +4,6 @@ import {ContainerSimpleInLine} from "../_ui/containers/container-simple";
 import { ImageWithFallback } from "../_ui/images/imagewithfallback";
 import { Button } from "../_ui/primitives/button";
 import { Heading } from "../_ui/primitives/heading";
-import { mockPicSumImages } from "@/mocks/images/picsum";
 
 
 export default function AboutSection() {
@@ -15,7 +14,7 @@ export default function AboutSection() {
            <ContainerSimpleInLine className="justify-between">
              <div className="col-12 2xl:col-5">
 
-                <ImageWithFallback src={mockPicSumImages[0]}
+                <ImageWithFallback src={"https://picsum.photos/600"}
                     alt="Artist Image"
                     width={1400}
                     height={800}

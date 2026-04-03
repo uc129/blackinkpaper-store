@@ -44,7 +44,6 @@ export default function ArtLightboxModal({
             if (e.key === "ArrowRight") {
                 setSelectedIndex(nextIndex);
             }
-
             if (e.key === "ArrowLeft") {
                 setSelectedIndex(prevIndex);
             }

@@ -8,11 +8,6 @@ import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 
 const allProductsGrid = <ProductGrid products={mockProducts} hover={true} />;
 
-const originalWorksProducts = mockProducts.filter(prod => prod.productShopCategory === "digital");
-const originalProductsGrid = originalWorksProducts.length > 0 ? <ProductGrid products={originalWorksProducts} /> : <Heading size={"h4"}>No Original Works Available</Heading>;
-// const originalWorksProductsList 
-
-const printWorksProducts = mockProducts.filter(prod => prod.productShopCategory === "print");
 
 
 export default function StoreLandingPage() {

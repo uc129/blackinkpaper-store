@@ -9,8 +9,8 @@ import { Button } from "@/components/_ui/primitives/button";
 const originalCategory = mockProductService.getCategories().find(cat => cat.name_code === "original");
 const allProducts = mockProductService.getALl();
 const originalFeaturedProducts = allProducts.filter(prod =>
-    prod.isFeatured === true &&
-    prod.categoryId === originalCategory?.id).slice(0, 4);
+    prod.taxonomy.isFeatured === true &&
+    prod.taxonomy.categoryId === originalCategory?.id).slice(0, 4);
 
 const showProductsList = originalFeaturedProducts.length > 0 ? originalFeaturedProducts : allProducts.slice(0, 3);
 
@@ -30,7 +30,7 @@ export default function OriginalWorksBanner() {
             <div className="grid gap-5">
                 {showProductsList.map(prod => (
                     <div key={prod.id} className="col-12 lg:col-6 2xl:col-4 mb-12">
-                        <CardSimple linkHref={`/store/shop/product/${prod.slug}`} imageSrc={prod.coverImageUrl} title={prod.name} />
+                        <CardSimple linkHref={`/store/shop/product/${prod.slug}`} imageSrc={prod.media.coverImageUrl} title={prod.name} />
                     </div>
                 ))}
             </div>

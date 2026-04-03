@@ -24,11 +24,11 @@ export default function AddToCartButton({ product, quantity, onAdd, selectedVari
         dispatch(addItem({
             id: product.id,
             name: product.name,
-            price:product.final_price!,
+            price:product.pricing.final_price!,
             quantity: quantity,
             currencyCode: "INR",
             selectedVariants: selectedVariants,
-            basePrice:product.base_price!,
+            basePrice:product.pricing.base_price!,
         }));
 
         setAdded(true)

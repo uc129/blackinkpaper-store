@@ -2,8 +2,7 @@
 
 import { useState } from "react";
 import Image, { ImageProps } from "next/image";
-import { mockPicSumImages } from "@/mocks/images/picsum";
-const ERROR_IMG_SRC = mockPicSumImages[2]
+const ERROR_IMG_SRC = "https://picsum.photos/300"
 
 type Props = ImageProps & {
     fallbackSrc?: string;

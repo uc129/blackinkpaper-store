@@ -12,18 +12,18 @@ const router = useRouter();
 const h = createColumnHelper<ProductType>();
 
 const columns = [
-  h.imageText("Product", "name", "coverImageUrl"),
-  h.text("SKU", "product_id"),
-  h.currency("Price", "base_price", "price_currency_code"),
-  h.badge("Status", "isAvailable", (val) => 
-    val ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'
-  ),
+  h.imageText("Product", (p) => p.name, (p) => p.media.coverImageUrl),
+  h.text("SKU", (p) => p.product_id),
+  h.currency("Price", (p) => p.pricing.base_price, (p) => p.pricing.currency_code),
+  h.badge("Status", (p) => p.taxonomy.isAvailable, 
+    (val) => val ? 'bg-green-100 text-green-700' : 'bg-slate-100 text-slate-500'),
+  h.text("Last Updated", (p) => new Date(p.audit.updatedAt).toLocaleDateString())
 ];
 
   return (
     <div className="space-y-6">
       <DataTable 
-        data={mockProducts} // Replace with your ASP.NET API fetch
+        data={mockProducts}
         columns={columns}
         onAdd={() => router.push('/products/new')}
         onEdit={(p) => router.push(`/products/${p.id}`)}
@@ -33,3 +33,4 @@ const columns = [
     </div>
   );
 }
+

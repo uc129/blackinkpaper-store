@@ -11,11 +11,15 @@ import PageToolbar from "./page-toolbar";
 
 
 export default function Home() {
+
+
   const handleToolbarEvents = (type: string) => {
     if (type === 'save') {
         console.log("Saving blog post to ASP.NET Backend...");
     }
   };
+
+  
   return (
     <Page className="home landing">
       {/* <PageToolbar hide={false} /> */}

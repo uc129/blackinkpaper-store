@@ -3,14 +3,15 @@
 import { useState, useRef } from "react"
 import LightGallery from "lightgallery/react"
 import { LightGallery as ILightGallery } from "lightgallery/lightgallery"
+import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback"
 import lgZoom from "lightgallery/plugins/zoom"
 import lgThumbnail from "lightgallery/plugins/thumbnail"
-
-
 import "lightgallery/css/lightgallery.css"
 import "lightgallery/css/lg-zoom.css"
 import "lightgallery/css/lg-thumbnail.css"
-import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback"
+
+
+
 
 export type GalleryImage = {
     src: string

@@ -11,8 +11,8 @@ import { ContainerSimple } from "../_ui/containers/container-simple";
 
 const artViewerArtworks: Artwork[] = mockProducts.slice(0, 5).map(prod => ({
     title: prod.name,
-    description: prod.description,
-    src: prod.coverImageUrl,
+    description: prod.content.description,
+    src: prod.media.coverImageUrl,
     artist: "Utkarsh Chaudhary",
     year: "2023",
     medium: "Digital Print",

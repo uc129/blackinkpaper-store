@@ -12,7 +12,7 @@ export default function ProductCardWithHover({
   product: ProductType;
   notificationText?: string;
 }) {
-  const hoverImage = product.allImageUrls?.[2] ?? product.coverImageUrl;
+  const hoverImage = product.media.allImageUrls?.[2] ?? product.media.coverImageUrl;
 
   return (
     <Link
@@ -22,7 +22,7 @@ export default function ProductCardWithHover({
       <div className="relative group h-[40vh] min-h-100 w-full overflow-hidden">
         {/* Base Image */}
         <ImageWithCaption
-          src={product.coverImageUrl}
+          src={product.media.coverImageUrl}
           fill
           alt={product.name}
           className="object-cover transition-opacity duration-500 group-hover:opacity-0 h-full w-full"
@@ -43,8 +43,8 @@ export default function ProductCardWithHover({
 
         <div className="flex justify-between items-center">
           <PriceTag
-            price={product.price_rupees}
-            previous={product.price_rupees - 1000}
+            price={product.pricing.base_price}
+            previous={product.pricing.base_price - 200}
             currencyCode="INR"
           />
 

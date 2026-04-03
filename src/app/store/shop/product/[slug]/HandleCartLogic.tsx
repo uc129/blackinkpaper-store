@@ -35,7 +35,8 @@ export default function HandleCartLogicComponent({product}: {product: ProductTyp
   };
 
   // Inside HandleCartLogicComponent
-  const basePrice = product.base_price;
+  const basePrice = product.pricing.base_price;
+  const currencyCode = product.pricing.currency_code;
 
   // Sum up all modifiers from our state
   const totalModifiers = Object.values(selection.variants).reduce(
@@ -87,8 +88,13 @@ export default function HandleCartLogicComponent({product}: {product: ProductTyp
       <AddToCartButton
         product={{
           ...product,
-          final_price: finalUnitPrice, // The calculated total
-          base_price: basePrice, // The original price
+          pricing: {
+            base_price:basePrice,
+            base_price_low_denomination:basePrice*100,
+            currency_code:currencyCode,
+            final_price:finalUnitPrice,
+            final_price_low_denomination: finalUnitPrice*100
+          } // The original price
         }}
         quantity={productQuantity}
         selectedVariants={formattedVariantsForCart}

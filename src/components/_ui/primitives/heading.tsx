@@ -1,5 +1,6 @@
 import { cn } from "@/lib/utils";
 import React from "react";
+import { ContainerSimple } from "../containers/container-simple";
 
 const headingStyles = {
     h1: "text-h1",
@@ -31,7 +32,23 @@ type HeadingProps = {
 } & React.HTMLAttributes<HTMLHeadingElement>;
 
 export function Heading({ as: Tag = "h2", size, className, ...props }: HeadingProps) {
+    return (<Tag className={cn(headingStyles[size ?? "h2"], className)} {...props} />);
+}
+
+type HeadingWithCaptionProps = {
+    as?: TagType;
+    size: Size;
+    className?: string;
+    title?:string;
+    caption?: string
+} & React.HTMLAttributes<HTMLHeadingElement>;
+
+export function HeadingWithCaption({ as: Tag = "h2", size, className, ...props }: HeadingWithCaptionProps) 
+ {
     return (
-        <Tag className={cn(headingStyles[size ?? "h2"], className)} {...props} />
+        <ContainerSimple className="gap-4">
+            <Tag className={cn(headingStyles[size ?? "h2"], className)} {...props} />
+            <p className="text-sm text-slate-500 mt-2">{props.caption}</p>
+        </ContainerSimple>
     );
 }
