@@ -3,23 +3,23 @@ import { cn } from "@/lib/utils";
 import Link from "next/link";
 
 const buttonVariants = cva(
-    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-50 cursor-pointer disabled:pointer-events-none",
+    "inline-flex items-center justify-center font-medium transition-colors focus:outline-none disabled:opacity-60 cursor-pointer disabled:pointer-events-none",
     {
         variants: {
             variant: {
-                primary: "bg-primary text-secondary hover:hover1 shadow-md",
-                secondary: "bg-secondary text-secondary-foreground hover:bg-secondary-hover",
-                ghost: "bg-transparent hover:bg-surface text-primary",
-                outline: "border border-primary text-primary hover:bg-surface",
-                destructive: "bg-error text-secondary hover:bg-red-700",
-                link: "text-link hover:text-gray-500",
+                primary: "bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--ink-soft)] rounded-full",
+                secondary: "bg-[var(--paper)] text-[var(--ink)] border border-[var(--border)] hover:bg-[var(--paper-deep)] rounded-full",
+                ghost: "bg-transparent text-[var(--ink)] hover:underline underline-offset-5",
+                outline: "border border-[var(--ink)] text-[var(--ink)] hover:bg-[var(--ink)] hover:text-[var(--paper)] rounded-full",
+                destructive: "bg-[var(--danger)] text-white hover:bg-red-800 rounded-full",
+                link: "text-[var(--ink)] hover:underline underline-offset-5",
 
-                pill: "bg-secondary hover:bg-hover1 text-primary border border-secondary rounded-full  tracking-wide",
-                pillDark: "bg-primary hover:bg-hover2 text-primary border border-primary-foreground rounded-full  tracking-wide",
+                pill: "bg-[var(--ink)] hover:bg-[var(--ink-soft)] text-[var(--paper)] border border-[var(--ink)] rounded-full",
+                pillDark: "bg-[var(--paper)] hover:bg-[var(--paper-deep)] text-[var(--ink)] border border-[var(--border)] rounded-full",
 
-                icon: "bg-transparent hover:bg-hover1 rounded-md",
-                iconSolid: "bg-primary text-secondary hover:bg-hover1 rounded-md",
-                iconOutline: "border border-primary hover:bg-hover1 rounded-md"
+                icon: "bg-transparent text-[var(--ink)] hover:bg-[var(--paper-deep)] rounded-full",
+                iconSolid: "bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--ink-soft)] rounded-full",
+                iconOutline: "border border-[var(--border)] text-[var(--ink)] hover:bg-[var(--paper-deep)] rounded-full"
             },
             size: {
                 sm: "h-8 px-3 text-xs",

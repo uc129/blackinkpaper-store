@@ -1,38 +1,37 @@
+import Script from "next/script";
+import type { PaymentSessionDto } from "@/lib/api/storefront/types";
 
+type RazorpaySuccessResponse = {
+  razorpay_payment_id: string;
+  razorpay_order_id: string;
+  razorpay_signature: string;
+};
 
-import Script from 'next/script';
-import { AddressFormData } from './shipping-address-form';
+export const openRazorpayModal = (
+  session: PaymentSessionDto,
+  onSuccess: (response: RazorpaySuccessResponse) => void,
+) => {
+  const options = {
+    key: session.razorpayKeyId,
+    amount: session.amountInSubunits,
+    currency: session.currencyCode || "INR",
+    name: session.displayName || "BlackInkPaper",
+    description: session.displayDescription || session.orderNumber || "Order Checkout",
+    order_id: session.razorpayOrderId,
+    handler: onSuccess,
+    prefill: {
+      name: session.prefillName || session.preview.shippingAddress.fullName || "",
+      contact: session.prefillContact || session.preview.shippingAddress.phoneNumber || "",
+    },
+    theme: {
+      color: "#000000",
+    },
+  };
 
- export const openRazorpayModal = (orderData: any, address: AddressFormData) => {
-        const options = {
-            key: process.env.NEXT_PUBLIC_RAZORPAY_KEY_ID, 
-            amount: orderData.amount, // Amount in paisa
-            currency: "INR",
-            name: "Your Store Name",
-            description: "Order Checkout",
-            order_id: orderData.id, // Created by your backend
-            handler: function (response: any) {
-                // This runs on payment success
-                alert(`Payment ID: ${response.razorpay_payment_id}`);
-                // Redirect to success page: /order-confirmation?id=...
-            },
-            prefill: {
-                name: address.fullName,
-                email: address.email,
-                contact: address.phone,
-            },
-            notes: {
-                address: `${address.street}, ${address.city}`,
-            },
-            theme: {
-                color: "#000000",
-            },
-        };
-
-        const rzp = new (window as any).Razorpay(options);
-        rzp.open();
-    };
+  const rzp = new (window as any).Razorpay(options);
+  rzp.open();
+};
 
 export function RazorpayIntegration() {
-    return ( <><Script src="https://checkout.razorpay.com/v1/checkout.js" /></> );
+  return <Script src="https://checkout.razorpay.com/v1/checkout.js" />;
 }

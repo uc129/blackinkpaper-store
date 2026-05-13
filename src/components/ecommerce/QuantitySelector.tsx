@@ -8,18 +8,18 @@ export function QuantitySelector({ value, onChange, classNames }: { value: numbe
         <div className={`flex items-center gap-3 ${classNames}`}>
             <Button variant={"icon"}
                 onClick={() => onChange(Math.max(1, value - 1))}
-                className="w-8 h-8 grid place-items-center rounded-card bg-surface-variant text-text-primary"
+                className="w-8 h-8 grid place-items-center text-[var(--ink)]"
             >
-                <MinusCircle/>
+                <MinusCircle size={18}/>
             </Button>
 
-            <span className="text-xl font-medium">{value}</span>
+            <span className="min-w-8 text-center text-base font-medium">{value}</span>
 
             <Button variant={"icon"} 
                 onClick={() => onChange(value + 1)}
-                className="w-8 h-8 grid place-items-center rounded-card bg-surface-variant text-text-primary"
+                className="w-8 h-8 grid place-items-center text-[var(--ink)]"
             >
-                <PlusCircle/>
+                <PlusCircle size={18}/>
             </Button>
         </div>
     );

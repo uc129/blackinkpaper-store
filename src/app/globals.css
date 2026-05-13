@@ -10,9 +10,8 @@
   --color-accent-1: var(--accent-1);
   --color-accent-2: var(--accent-2);
 
-  --font-sans: (var(--font-geist-sans));
-  --font-mono: var(--font-geist-mono);
-  --font-display: var(--font-mplus2);
+  --font-sans: var(--font-bitter);
+  --font-display: var(--font-young-serif);
 
   --breakpoint-xs: 360px;
   --breakpoint-sm: 640px;
@@ -40,6 +39,26 @@
       transform: translate(0px, 0px) scale(1);
     }
   }
+
+  @keyframes product-lightbox-fade {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  @keyframes product-lightbox-image {
+    from {
+      opacity: 0;
+      transform: scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
 }
 
 :root {
@@ -53,19 +72,25 @@
   --screen-3xl: 1540px;
 
   /* Colors */
-  --primary: #e8e8e8;
-  --secondary: #1c1e1d;
-  --muted: #6b6f6d;
-  --border: #d6d6d6;
-  --accent-1: #ffd123;
-  --accent-2: #ffbfff;
+  --primary: #ecebea;
+  --secondary: #332d2d;
+  --muted: #817b79;
+  --border: #d4d0cc;
+  --accent-1: #b08c36;
+  --accent-2: #f5f1e8;
+  --paper: #f7f6f3;
+  --paper-deep: #e2e0de;
+  --ink: #332d2d;
+  --ink-soft: #5f5856;
+  --footer-ink: #302929;
+  --danger: #b44935;
 
   /* Typography scale */
-  --text-display: clamp(8.5rem, calc(5rem + 5.2vw), 11rem);
-  --text-display-tablet: clamp(4rem, calc(2rem + 2vw), 5rem);
-  --text-display-caption: clamp(1.7rem, 1.7vw, 3rem);
-  --text-caption: clamp(1.4rem, 1.4vw, 2.3rem);
-  --text-title:clamp(3.8rem, 4.8vw, 6.4rem);
+  --text-display: clamp(3.5rem, 8vw, 6.5rem);
+  --text-display-tablet: clamp(2.75rem, 8vw, 5rem);
+  --text-display-caption: clamp(1.2rem, 1.6vw, 1.7rem);
+  --text-caption: clamp(1.05rem, 1.4vw, 1.35rem);
+  --text-title: clamp(2.6rem, 5vw, 4.7rem);
 
   --text-h1: clamp(2.25rem, 4vw, 3.25rem);
   --text-h2: clamp(1.75rem, 3vw, 2.4rem);
@@ -93,9 +118,9 @@
   --grid-columns: 12;
   --grid-gutter: var(--space-4); /* 16px */
   --grid-margin: var(--space-5); /* 24px */
-  --container-max: 1840px;
-  --page-max: 1840px;
-  --navbar-height: 4rem;
+  --container-max: 1280px;
+  --page-max: 1280px;
+  --navbar-height: 5rem;
 
   --page-height: calc(
     95vh - var(--navbar-height)
@@ -125,17 +150,17 @@
     font-size: var(--text-display-tablet);
     font-weight: 800;
     line-height: 0.95;
-    font-family: var(--font-cairo);
+    font-family: var(--font-young-serif);
   }
   .text-display-caption {
     font-size: var(--text-display-caption);
     font-weight: 500;
-    font-family: var(--font-cairo);
+    font-family: var(--font-bitter);
   }
   .text-caption {
     font-size: var(--text-caption);
     font-weight: 300;
-    font-family: var(--font-cairo);
+    font-family: var(--font-bitter);
   }
   .text-body {
     font-size: var(--text-body);
@@ -173,7 +198,7 @@
     font-size: var(--text-title);
     font-weight: 600;
     line-height: 0.95;
-    font-family: var(--font-cairo);
+    font-family: var(--font-young-serif);
   }
   .h-page {
     min-height: var(--page-height);
@@ -278,7 +303,7 @@
       font-size: var(--text-display);
       font-weight: 900;
       line-height: 0.95;
-      font-family: var(--font-cairo);
+      font-family: var(--font-young-serif);
     }
   }
 
@@ -323,7 +348,7 @@
   }
 
   /* 2xl */
-  @media (min-width: 1348) {
+  @media (min-width: 1348px) {
     .\32xl\:col-1 {
       grid-column: span 1;
     }
@@ -362,9 +387,10 @@
     }
   }
 
-
 .glassmorph {
-    @apply relative overflow-hidden bg-white/10 backdrop-blur-md backdrop-saturate-150 border border-white/20 shadow-lg;
+    @apply relative overflow-hidden border shadow-none;
+    background: var(--paper);
+    border-color: var(--border);
   }
 
   /* The "Frost" Texture */
@@ -376,27 +402,31 @@
 
 }
 
-html{
-zoom:0.80;
-}
-
 body {
   background-color: var(--primary);
+  color: var(--ink);
   overflow-x: hidden;
+  font-family: var(--font-bitter), Georgia, serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
 }
 
 .layout-navbar {
   max-width: var(--container-max);
   width:100%;
   margin: 0 auto;
-  padding-inline: var(--padding);
+  padding-inline: clamp(1rem, 4vw, var(--padding));
 }
 .layout {
   min-height: var(--page-height);
   max-width: var(--container-max);
   width: 100%;
   margin: 0 auto;
-  padding-inline: var(--padding);
+  padding-inline: clamp(1rem, 4vw, var(--padding));
   overflow: visible;
   background-color: var(--primary);
 }
@@ -405,12 +435,13 @@ body {
   max-width: var(--page-max);
   width: 100%;
   margin: 0 auto;
-  padding: 0 calc(var(--padding));
+  padding: 0 clamp(1rem, 4vw, var(--padding));
+  background-color: var(--primary);
 }
 .section {
   max-width: var(--container-max);
   width: 100%;
-  padding: var(--padding) 0;
+  padding: clamp(4rem, 8vw, 8rem) 0;
   overflow: hidden;
 }
 .vertical-flex {
@@ -444,7 +475,7 @@ body {
   margin-bottom: calc(var(--margin));
 }
 
-@media (min-width: 750) {
+@media (min-width: 750px) {
   .container-simple-inline {
     flex-direction: row;
   }
@@ -527,4 +558,69 @@ body {
 
 .animate-fadeIn {
   animation: fadeIn 0.25s ease-out forwards;
+}
+
+h1,
+h2,
+h3,
+h4,
+.font-display {
+  font-family: var(--font-young-serif), Georgia, serif;
+  letter-spacing: 0;
+}
+
+a {
+  text-underline-offset: 5px;
+}
+
+input,
+textarea,
+select {
+  background: var(--paper);
+  border: 1px solid var(--border);
+  color: var(--ink);
+  font-family: var(--font-bitter), Georgia, serif;
+}
+
+input:focus,
+textarea:focus,
+select:focus,
+button:focus-visible,
+a:focus-visible {
+  outline: 2px solid var(--accent-1);
+  outline-offset: 3px;
+}
+
+.store-surface {
+  background: var(--paper);
+  border: 1px solid var(--border);
+}
+
+.store-link {
+  color: var(--ink);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 5px;
+}
+
+.product-cat-card-link,
+.product-card-link {
+  display: block;
+  color: var(--ink);
+}
+
+.product-cat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: auto;
+}
+
+.product-cat-card > .relative,
+.product-cat-card .relative:has(img) {
+  aspect-ratio: 4 / 3;
+}
+
+.product-cat-card img {
+  object-fit: cover;
 }

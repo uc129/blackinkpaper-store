@@ -10,20 +10,18 @@ export default function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut" }}
             viewport={{ once: true }}
-            className="relative bg-[#0b0b0d] text-neutral-400 border-t border-neutral-800 overflow-hidden mt-8"
+            className="relative mt-20 overflow-hidden bg-[var(--footer-ink)] text-[#e9e4dc]"
         >
-            <div className="absolute inset-0 opacity-[0.05] pointer-events-none bg-[url('https://grainy-gradients.vercel.app/noise.svg')]" />
-
             <div className="layout-navbar relative z-10">
 
-                <div className="grid grid-cols-12 gap-8 pt-6">
+                <div className="grid grid-cols-12 gap-8 py-14 md:py-20">
 
                     {/* Brand */}
                     <div className="col-12 lg:col-6 pr-0 md:pr-12 pb-12 md:pb-0">
-                        <h2 className="text-xl tracking-[0.25em] text-white mb-6">
-                            BLACKINKPAPER ILLUSTRATION
+                        <h2 className="font-display text-3xl text-white mb-6">
+                            BlackInkPaper Illustration
                         </h2>
-                        <p className="text-sm leading-relaxed text-neutral-500 max-w-sm">
+                        <p className="text-base leading-relaxed text-[#d0c8bf] max-w-sm">
                             A curated space for handmade artworks.
                             Where texture, silence, and human touch converge.
                         </p>
@@ -31,19 +29,25 @@ export default function Footer() {
 
                     {/* Navigation */}
                     <div className="col-12 lg:col-3 px-0 md:px-12 py-12 md:py-0">
-                        <h3 className="text-xs uppercase tracking-[0.3em] text-neutral-500 mb-8">
+                        <h3 className="font-display text-2xl text-white mb-8">
                             Explore
                         </h3>
 
                         <ul className="space-y-4">
-                            {["Original Works", "Gallery", "About", "Contact"].map((item) => (
+                            {[
+                                ["Store", "/store"],
+                                ["Black & White", "/store/shop/category/black-and-white"],
+                                ["Cityscapes", "/store/shop/category/cityscapes"],
+                                ["About", "/about"],
+                                ["Contact", "/contact"],
+                            ].map(([item, href]) => (
                                 <li key={item}>
                                     <NavLink
                                         text={item}
-                                        href={`/${item.toLowerCase().replace(/\s+/g, "-")}`}
+                                        href={href}
                                         linkSize="sm"
                                         underline={true}
-                                        className="text-neutral-400 hover:text-white"
+                                        className="text-[#d0c8bf] hover:text-white"
                                     />
                                 </li>
                             ))}
@@ -52,29 +56,30 @@ export default function Footer() {
 
                     {/* Guestbook */}
                     <div className="col-12 lg:col-3 pl-0 md:pl-12 pt-12 md:pt-0">
-                        <h3 className="text-xs uppercase tracking-[0.3em] text-neutral-500 mb-8">
-                            Join the Guestbook
+                        <h3 className="font-display text-2xl text-white mb-8">
+                            Subscribe
                         </h3>
 
-                        <form className="flex flex-col gap-4 max-w-xs">
+                        <form className="flex w-full max-w-xs flex-col gap-4">
                             <input
                                 type="email"
-                                placeholder="Your email"
-                                className="bg-transparent border-b border-neutral-700 focus:border-white outline-none py-2 text-sm transition-colors"
+                                placeholder="Email Address"
+                                className="w-full bg-[#f6f2ea] border-0 px-5 py-4 text-sm text-[var(--ink)] outline-none transition-colors"
                             />
                             <button
                                 type="submit"
-                                className="text-left text-sm text-neutral-500 hover:text-white transition"
+                                className="w-full rounded-full bg-[#d8d4cb] px-7 py-4 text-sm font-semibold text-[var(--ink)] transition hover:bg-white"
                             >
-                                Receive exhibition updates →
+                                Sign Up
                             </button>
+                            <p className="text-sm text-[#c8c0b8]">We respect your privacy.</p>
                         </form>
                     </div>
 
                 </div>
 
                 {/* Bottom Bar */}
-                <div className="mt-20 pt-8 border-t border-neutral-800 flex flex-col md:flex-row justify-between items-center text-xs text-neutral-600 gap-4">
+                <div className="border-t border-white/10 py-8 flex flex-col md:flex-row justify-between items-center text-xs text-[#b7aea6] gap-4">
 
                     <span>
                         © {new Date().getFullYear()} BlackPaper Illustration. All rights reserved.
@@ -86,14 +91,14 @@ export default function Footer() {
                             href="#"
                             linkSize="xs"
                             underline={true}
-                            className="text-neutral-400 hover:text-white"
+                            className="text-[#d0c8bf] hover:text-white"
                         />
                         <NavLink
                             text="Twitter"
                             href="#"
                             linkSize="xs"
                             underline={true}
-                            className="text-neutral-400 hover:text-white"
+                            className="text-[#d0c8bf] hover:text-white"
                         />
                     </div>
 

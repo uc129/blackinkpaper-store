@@ -1,51 +1,68 @@
 "use client";
 
 import Link from "next/link";
-import { ImageWithCaption } from "@/components/_ui/images/imageWithCaption";
-import { ProductType } from "@/lib/api/ecommerce/types/product-type";
+import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback";
+import type { ProductSummaryDto } from "@/lib/api/storefront/types";
 import { PriceTag } from "../PriceTag";
 
 export default function ProductCardWithHover({
   product,
   notificationText,
+  priority = false,
 }: {
-  product: ProductType;
+  product: ProductSummaryDto;
   notificationText?: string;
+  priority?: boolean;
 }) {
-  const hoverImage = product.media.allImageUrls?.[2] ?? product.media.coverImageUrl;
+  const coverImage = product.media.coverImageUrl || product.media.headerImageUrl || null;
+  const hoverImage = product.media.headerImageUrl || coverImage;
+  const hasHoverImage = Boolean(coverImage && hoverImage && hoverImage !== coverImage);
+  const hoverImageSrc = hasHoverImage ? hoverImage : null;
 
   return (
     <Link
       href={`/store/shop/product/${product.slug}`}
-      className="block rounded-card bg-surface shadow-card hover:shadow-cardHover transition-shadow"
+      className="product-card-link group block"
     >
-      <div className="relative group h-[40vh] min-h-100 w-full overflow-hidden">
-        {/* Base Image */}
-        <ImageWithCaption
-          src={product.media.coverImageUrl}
-          fill
-          alt={product.name}
-          className="object-cover transition-opacity duration-500 group-hover:opacity-0 h-full w-full"
-        />
-        {/* Hover Image */}
-        <ImageWithCaption
-          src={hoverImage}
-          fill
-          alt={`${product.name} hover view`}
-          className="object-cover opacity-0 transition-opacity duration-500 group-hover:opacity-100"
-        />
+      <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--paper-deep)]">
+        {coverImage ? (
+          <>
+            <ImageWithFallback
+              src={coverImage}
+              fill
+              priority={priority}
+              loading={priority ? "eager" : "lazy"}
+              sizes="(min-width: 1348px) 33vw, (min-width: 988px) 50vw, 100vw"
+              alt={product.name || "Product artwork"}
+              className={`object-cover transition duration-500 group-hover:scale-[1.02] ${hasHoverImage ? "group-hover:opacity-0" : ""}`}
+            />
+            {hoverImageSrc && (
+              <ImageWithFallback
+                src={hoverImageSrc}
+                fill
+                sizes="(min-width: 1348px) 33vw, (min-width: 988px) 50vw, 100vw"
+                alt={`${product.name || "Product"} hover view`}
+                className="object-cover opacity-0 transition duration-500 group-hover:scale-[1.02] group-hover:opacity-100"
+              />
+            )}
+          </>
+        ) : (
+          <div className="flex h-full w-full items-center justify-center text-sm text-[var(--muted)]">
+            No image from server
+          </div>
+        )}
       </div>
 
-      <div className="p-space-4 flex flex-col gap-space-3">
-        <h2 className="text-title-sm text-text-primary font-semibold line-clamp-2">
+      <div className="pt-5 flex flex-col gap-3">
+        <h2 className="font-display text-2xl font-bold leading-tight text-[var(--ink)] line-clamp-2">
           {product.name}
         </h2>
 
         <div className="flex justify-between items-center">
           <PriceTag
-            price={product.pricing.base_price}
-            previous={product.pricing.base_price - 200}
-            currencyCode="INR"
+            previous={product.pricing.basePrice === product.pricing.finalPrice ? undefined : product.pricing.basePrice}
+            price={product.pricing.finalPrice}
+            currencyCode={product.pricing.currencyCode || "INR"}
           />
 
           {notificationText && (

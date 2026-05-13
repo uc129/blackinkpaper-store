@@ -1,6 +1,5 @@
 import { apiClient } from "../../client";
 import { ProductType } from "../types/product-type"
-import { mockProducts, mockProductCategories, mockProductSubCategories } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 
 
 export const productService = {
@@ -13,13 +12,3 @@ export const productService = {
     delete: (id: string) =>
         apiClient.delete<void>(`/products/${id}`),
 };
-
-
-
-export const mockProductService = {
-    getALl: () => mockProducts,
-    getById: (id: string) => mockProducts.find(product => product.product_id === id),
-    getCategories: () => mockProductCategories,
-    getSubCategories: () => mockProductSubCategories,
-}
-
