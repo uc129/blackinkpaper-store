@@ -4,22 +4,22 @@ import { useState } from "react";
 import { Artwork } from "@/lib/Artwork";
 import EmblaCarouselSimple, { GalleryItem } from "../_ui/interactive/embla/carousel-simple";
 import { Heading } from "../_ui/primitives/heading"
-import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data"
 import ArtLightboxModal from "../_ui/interactive/modals/art-lightbox-modal";
-import { Button } from "../_ui/primitives/button";
 import { ContainerSimple } from "../_ui/containers/container-simple";
+import type { ProductSummaryDto } from "@/lib/api/storefront/types";
 
-const artViewerArtworks: Artwork[] = mockProducts.slice(0, 5).map(prod => ({
-    title: prod.name,
-    description: prod.content.description,
-    src: prod.media.coverImageUrl,
+function toGalleryItems(products: ProductSummaryDto[]): GalleryItem[] {
+const artViewerArtworks: Artwork[] = products.filter(prod => prod.media.coverImageUrl || prod.media.headerImageUrl).slice(0, 5).map(prod => ({
+    title: prod.name || "Artwork",
+    description: "",
+    src: prod.media.coverImageUrl || prod.media.headerImageUrl || "",
     artist: "Utkarsh Chaudhary",
     year: "2023",
     medium: "Digital Print",
-    slug: prod.slug
+    slug: prod.slug || ""
 }));
 
-const galleryItems: GalleryItem[] = artViewerArtworks.map(art => ({
+return artViewerArtworks.map(art => ({
     src: art.src,
     thumb: art.src,
     title: art.title,
@@ -30,10 +30,12 @@ const galleryItems: GalleryItem[] = artViewerArtworks.map(art => ({
     slideName: art.title,
     slug: art.slug
 }));
+}
 
-export const LandingFlipbookContainer = () => {
+export const LandingFlipbookContainer = ({ products }: { products: ProductSummaryDto[] }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
+    const galleryItems = toGalleryItems(products);
 
     const handleCarouselImageClick = (index: number) => {
         setSelectedIndex(index);
@@ -49,22 +51,30 @@ export const LandingFlipbookContainer = () => {
                 Experience The Art Of Storytelling With Our Interactive Flipbook
             </Heading>
 
-            <EmblaCarouselSimple
-                slides={galleryItems}
-                onImageClick={(index) => handleCarouselImageClick(index)}
-                options={{}}
-                delay={8000}
-                actionButton={{ label: "Shop Now", hrefPrefix: "/store/shop/product" }}
-            />
+            {galleryItems.length > 0 ? (
+                <>
+                    <EmblaCarouselSimple
+                        slides={galleryItems}
+                        onImageClick={(index) => handleCarouselImageClick(index)}
+                        options={{}}
+                        delay={8000}
+                        actionButton={{ label: "Shop Now", hrefPrefix: "/store/shop/product" }}
+                    />
 
-            <ArtLightboxModal
-                isOpen={isOpen}
-                onClose={() => setIsOpen(false)}
-                items={galleryItems}
-                selectedIndex={selectedIndex}
-                setSelectedIndex={setSelectedIndex}
+                    <ArtLightboxModal
+                        isOpen={isOpen}
+                        onClose={() => setIsOpen(false)}
+                        items={galleryItems}
+                        selectedIndex={selectedIndex}
+                        setSelectedIndex={setSelectedIndex}
 
-            />
+                    />
+                </>
+            ) : (
+                <div className="border border-dashed border-[var(--border)] bg-[var(--paper)] p-8 text-center text-[var(--ink-soft)]">
+                    No product images returned by the server.
+                </div>
+            )}
         </ContainerSimple>
     );
 };

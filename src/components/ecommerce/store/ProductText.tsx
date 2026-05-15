@@ -20,9 +20,9 @@ export function ProductText({ title, description, currentPrice, oldPrice, curren
 
     if (large) {
         return (
-            <div className={`py-4 flex flex-col gap-4 ${classNames}`}>
-                <Heading  size="title" className={`${rest.titleClassNames}`}>{title}</Heading>
-                {description && <Heading as="h3" size="caption" className={`${rest.descriptionClassNames}`}> {description} </Heading>}
+            <div className={`py-4 flex flex-col gap-5 ${classNames}`}>
+                <Heading  size="title" className={`font-display text-[var(--ink)] ${rest.titleClassNames}`}>{title}</Heading>
+                {description && <div className={`max-w-2xl whitespace-pre-line text-lg leading-relaxed text-[var(--ink-soft)] ${rest.descriptionClassNames}`}> {description} </div>}
                 {displayPrice && <PriceTag large price={currentPrice} previous={oldPrice} currencyCode={currencyCode || "INR"} notificationText={rest.notificationText} />}
             </div>
         )
@@ -30,8 +30,8 @@ export function ProductText({ title, description, currentPrice, oldPrice, curren
 
     return (
         <div className={`py-4 flex flex-col gap-3 ${classNames}`}>
-            <Heading  size="title" className={`${rest.titleClassNames}`}>{title}</Heading>
-            {description && <article className={`${rest.descriptionClassNames}`}> {description} </article>}
+            <Heading  size="titleSmall" className={`font-display text-[var(--ink)] ${rest.titleClassNames}`}>{title}</Heading>
+            {description && <article className={`text-[var(--ink-soft)] ${rest.descriptionClassNames}`}> {description} </article>}
             {displayPrice && <PriceTag price={currentPrice} previous={oldPrice} currencyCode={currencyCode || "INR"} notificationText={rest.notificationText} />}
         </div>
     )

@@ -60,6 +60,13 @@ const sizeClasses: Record<LinkSize, string> = {
     "3xl": "text-3xl",
 };
 
+const weightClasses: Record<BoldTextVariants, string> = {
+    normal: "font-normal",
+    bold: "font-bold",
+    extrabold: "font-extrabold",
+    black: "font-black",
+};
+
 export const NavLink = ({
     text,
     sup,
@@ -69,6 +76,7 @@ export const NavLink = ({
     underline = true,
     className = "",
     boldVariant = "normal",
+    onClick,
 }: {
     text: string;
     sup?: string;
@@ -78,10 +86,12 @@ export const NavLink = ({
     underline?: boolean;
     className?: string;
     boldVariant?: BoldTextVariants;
+    onClick?: () => void;
 }) => {
     return (
         <Link
             href={href}
+            onClick={onClick}
             className={`
         relative group w-fit
 
@@ -89,7 +99,7 @@ export const NavLink = ({
         transition-colors duration-300
         flex items-start gap-1
         ${className}
-        font-${boldVariant}
+        ${weightClasses[boldVariant]}
 
       `}
         >
@@ -129,5 +139,4 @@ export const ExternalLink = ({ text, href }: { text: string; href: string }) => 
         {text}
     </a>
 );
-
 

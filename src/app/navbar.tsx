@@ -1,13 +1,25 @@
 'use client';
 import { useState, useEffect, useRef } from 'react';
-import { Menu, X, GalleryHorizontalEnd, Cog } from 'lucide-react';
+import { Menu, X } from 'lucide-react';
 import { Button } from '@/components/_ui/primitives/button';
 import { NavLink } from '@/components/_ui/primitives/links';
-import { useAppSelector } from '@/lib/hooks/redux-hooks';
+import { useAppDispatch, useAppSelector } from '@/lib/hooks/redux-hooks';
+import { logout } from '@/lib/redux/store/slices/authSlice';
+import { clearCartState } from '@/lib/redux/store/slices/cartSlice';
 
-
+const primaryNavItems = [
+    { text: "Store", href: "/store" },
+    { text: "Portfolio", href: "/works" },
+    { text: "Black & White", href: "/store/shop/category/black-and-white" },
+    { text: "Cityscapes", href: "/store/shop/category/cityscapes" },
+    { text: "Commissions", href: "/store/shop/category/commissions" },
+    { text: "Travel Art", href: "/store/shop/category/travel-art" },
+    { text: "About", href: "/about" },
+    { text: "Contact", href: "/contact" },
+];
 
 const Navbar = () => {
+    const dispatch = useAppDispatch();
     const [open, setOpen] = useState(false);
     const overlayRef = useRef<HTMLDivElement>(null);
 
@@ -35,31 +47,47 @@ const Navbar = () => {
         document.addEventListener('keydown', h); return () => document.removeEventListener('keydown', h)
     }, [open]);
 
-    const { cartItems } = useAppSelector((state) => state.cart);
-    const totalItemsCount = cartItems.reduce((total, item) => {return total + item.quantity;}, 0);
+    const { cart } = useAppSelector((state) => state.cart);
+    const authStatus = useAppSelector((state) => state.auth.status);
+    const totalItemsCount = cart?.itemCount ?? 0;
+    const isAuthenticated = authStatus === "authenticated";
+
+    const handleLogout = async () => {
+        await dispatch(logout());
+        dispatch(clearCartState());
+    };
 
     return (<>
-        <nav id="main-navbar" className="sticky top-0 z-40 py-4  backdrop-blur-md bg-background/80 supports-backdrop-filter:bg-background/60 transition-all duration-300">
-            <div className="layout-navbar flex items-center justify-between">
-                <NavLink href="/" text='BLACKINKPAPER ILLUSTRATION' linkSize='xl' boldVariant='bold' />
+        <nav id="main-navbar" className="sticky top-0 z-40 bg-[var(--primary)] py-4 sm:py-5 lg:py-6">
+            <div className="layout-navbar flex items-center justify-between gap-4 lg:gap-8">
+                <NavLink
+                    href="/"
+                    text="BlackInkPaper Illustration"
+                    linkSize="xl"
+                    boldVariant="bold"
+                    className="max-w-[15rem] leading-tight sm:max-w-none font-display text-[var(--ink)]"
+                />
 
-                <div className="flex items-center gap-8">
-                    <div className="hidden md:flex gap-8">
-                        <NavLink text="Store" href="/store" sup='1' />
-                        <NavLink text="Black & White" href="/works/categories/black-and-white" />
-                        <NavLink text="CityScapes" href="/works/categories/cityscapes" />
-                        <NavLink text="Commissions" href="/works/categories/commissions" />
-                        <NavLink text="Travel Art" href="/works/categories/travel-art" />
-                        <NavLink text="About" href="/about" />
-                        <NavLink text="Contact" href="/contact" />
+                <div className="flex items-center gap-6">
+                    <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
+                        {primaryNavItems.map((item) => (
+                            <NavLink key={item.href} text={item.text} href={item.href} className="text-[var(--ink)]" />
+                        ))}
                         <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
-                        <NavLink text="Admin" href="/admin" />
+                        {isAuthenticated ? (
+                            <>
+                                <NavLink text="Account" href="/account" />
+                                <NavLink text="Orders" href="/account/orders" />
+                                <button onClick={handleLogout} className="text-sm relative group w-fit underline-offset-5 hover:underline">Logout</button>
+                            </>
+                        ) : (
+                            <NavLink text="Login" href="/login" />
+                        )}
                     </div>
 
                     <div className="flex items-center gap-3">
-                        <Button variant="icon"><GalleryHorizontalEnd size={18} /></Button>
-                        <Button variant="icon" className="md:hidden" onClick={() => setOpen(true)}>
-                            <Menu size={18} />
+                        <Button variant="icon" className="xl:hidden" onClick={() => setOpen(true)} aria-label="Open menu">
+                            <Menu size={24} strokeWidth={1.8} />
                         </Button>
                     </div>
                 </div>
@@ -68,25 +96,29 @@ const Navbar = () => {
 
 
         {open && (
-            <div id="main-navbar-mobile" className="fixed inset-0 z-50 bg-background">
-                <div className="layout py-6 flex items-center justify-between">
-                    <div className="font-bold tracking-wider text-xl">BLACKINKPAPER</div>
+            <div id="main-navbar-mobile" className="fixed inset-0 z-50 overflow-y-auto bg-[var(--primary)] text-[var(--ink)]">
+                <div className="layout-navbar flex items-center justify-between gap-4 py-4 sm:py-6">
+                    <div className="font-display text-xl font-bold leading-tight sm:text-2xl">BlackInkPaper</div>
                     <Button variant="icon" onClick={() => setOpen(false)} aria-label="Close menu">
-                        <X size={20} />
+                        <X size={24} strokeWidth={1.8} />
                     </Button>
                 </div>
 
-                <div className="layout mt-12">
-                    <div className="flex flex-col gap-6 text-h3">
-                       <NavLink text="Store" href="/store" sup='1' />
-                        <NavLink text="Black & White" href="/works/categories/black-and-white" />
-                        <NavLink text="CityScapes" href="/works/categories/cityscapes" />
-                        <NavLink text="Commissions" href="/works/categories/commissions" />
-                        <NavLink text="Travel Art" href="/works/categories/travel-art" />
-                        <NavLink text="About" href="/about" />
-                        <NavLink text="Contact" href="/contact" />
-                        <NavLink text="Cart" href="/store/shop/cart"  sup={totalItemsCount >0? totalItemsCount.toString():""}/>
-                        <NavLink text="Admin" href="/admin" />
+                <div className="layout-navbar pb-10 pt-6 sm:pt-10">
+                    <div ref={overlayRef} className="flex flex-col gap-4 text-[clamp(2rem,9vw,3.35rem)] leading-[1.06] sm:gap-5">
+                        {primaryNavItems.map((item) => (
+                            <NavLink key={item.href} text={item.text} href={item.href} onClick={() => setOpen(false)} />
+                        ))}
+                        <NavLink text="Cart" href="/store/shop/cart" sup={totalItemsCount > 0 ? totalItemsCount.toString() : ""} onClick={() => setOpen(false)} />
+                        {isAuthenticated ? (
+                            <>
+                                <NavLink text="Account" href="/account" onClick={() => setOpen(false)} />
+                                <NavLink text="Orders" href="/account/orders" onClick={() => setOpen(false)} />
+                                <button onClick={handleLogout} className="text-left text-sm">Logout</button>
+                            </>
+                        ) : (
+                            <NavLink text="Login" href="/login" onClick={() => setOpen(false)} />
+                        )}
                     </div>
                 </div>
             </div>

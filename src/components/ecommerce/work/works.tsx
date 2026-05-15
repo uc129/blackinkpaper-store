@@ -1,28 +1,21 @@
 
-import { mockProductService } from "@/lib/api/ecommerce/services/products-service"
-import CardSimple from "../../_ui/cards/card-simple";
 import { Heading } from "@/components/_ui/primitives/heading";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";
+import type { ProductSummaryDto } from "@/lib/api/storefront/types";
+import PortfolioCard from "./PortfolioCard";
 
-
-
-
-export default function WorkProjectsGrid() {
-    const categories = mockProductService.getCategories();
-    const activeCategories = categories.filter(cat => cat.isActive && cat.name_code !== "original");
+export default function WorkProjectsGrid({ products = [] }: { products?: ProductSummaryDto[] }) {
+    if (products.length === 0) {
+        return null;
+    }
 
     return (
-        <ContainerSimple>
-            <Heading size="title" className="breathe-room">Works</Heading>
-            <div className="mx-auto grid gap-0 items-center align-center w-full">
-                {activeCategories.map(cat => (
-                    <div key={cat.id} className="col-12 lg:col-6 2xl:col-4 mb-12 ">
-                        <CardSimple
-                            linkHref={`/works/categories/${cat.slug}`}
-                            imageSrc={cat.coverImageUrl!}
-                            title={cat.print_name}
-                            showTitle
-                        ></CardSimple>
+        <ContainerSimple className="gap-16">
+            <Heading size="title" className="font-display text-center text-[var(--ink)]">My Works</Heading>
+            <div className="mx-auto grid gap-x-12 gap-y-20 items-center align-center w-full">
+                {products.slice(0, 4).map((product, index) => (
+                    <div key={product.slug || product.id} className="col-12 lg:col-6">
+                        <PortfolioCard product={product} priority={index === 0} />
                     </div>
                 ))}
             </div>

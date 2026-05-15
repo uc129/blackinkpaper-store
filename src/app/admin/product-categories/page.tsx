@@ -1,10 +1,8 @@
 'use client'
 import { useRouter } from "next/navigation";
 import DataTable from "../../../components/admin/masters-datatable";
-import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 import { createColumnHelper } from "@/components/admin/createColumnHelper";
 import { ProductCategoryType } from "@/lib/api/ecommerce/types/product-categories";
-import { mockProductCategories } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 
 
 export default function AdminProductCategoriesListPage(){
@@ -22,7 +20,7 @@ const columns = [
   return (
     <div className="space-y-6">
       <DataTable 
-        data={mockProductCategories} // Replace with your ASP.NET API fetch
+        data={[]}
         columns={columns}
         onAdd={() => router.push('/products/new')}
         onEdit={(p) => router.push(`/products/${p.id}`)}

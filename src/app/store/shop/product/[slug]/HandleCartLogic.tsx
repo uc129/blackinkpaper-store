@@ -1,105 +1,138 @@
 "use client";
-import {ContainerSimple,Grid} from "@/components/_ui/containers/container-simple";
-import { GlassShowcase } from "@/components/_ui/interactive/glass-showcase";
+
+import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { QuantitySelector } from "@/components/ecommerce/QuantitySelector";
-import AddToCartButton from "@/components/ecommerce/store/AddToCartButton";
 import { VariantSelector } from "@/components/ecommerce/store/VariantSelector";
-import { ProductType } from "@/lib/api/ecommerce/types/product-type";
-import { useState } from "react";
+import { ProductText } from "@/components/ecommerce/store/ProductText";
+import type { ProductResponseDto } from "@/lib/api/storefront/types";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
+import { addServerCartItem } from "@/lib/redux/store/slices/cartSlice";
 
-export default function HandleCartLogicComponent({product}: {product: ProductType}) {
+type SelectedOption = {
+  productVariantId: number;
+  productVariantOptionId: number;
+  label: string;
+  value: string;
+  priceModifier: number;
+  absolutePrice?: number | null;
+};
+
+export default function HandleCartLogicComponent({ product }: { product: ProductResponseDto }) {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const authStatus = useAppSelector((state) => state.auth.status);
+  const cartStatus = useAppSelector((state) => state.cart.status);
   const [productQuantity, setProductQuantity] = useState(1);
-  const [selection, setSelection] = useState({
-    quantity: 1,
-    variants:product.variants?.reduce((acc, v) => {
-          const firstOption = v.options[0];
-          return {...acc,[v.label]: {value: firstOption.value, priceModifier: firstOption.priceModifier || 0}}}, {} as 
-          Record<string, { value: string; priceModifier: number }>,) || {},
-  });
+  const [added, setAdded] = useState(false);
+  const variantOptions = useMemo(
+    () =>
+      (product.variants || []).flatMap((variant) =>
+        variant.options.map((option) => ({
+          id: option.id,
+          productVariantId: variant.id,
+          productVariantOptionId: option.id,
+          label: variant.label || option.value || "Option",
+          value: option.value || "",
+          priceModifier: option.priceModifier || 0,
+          absolutePrice: option.absolutePrice ?? variant.absolutePrice ?? null,
+        })),
+      ),
+    [product.variants],
+  );
+  const [selection, setSelection] = useState<SelectedOption | null>(
+    () => variantOptions[0] ?? null,
+  );
 
-  const updateVariants = (key: string,value: string,priceModifier: number = 0,) => {
-    setSelection((prev) => ({...prev,variants: {...prev.variants,[key]: { value, priceModifier }}}));
+  const finalUnitPrice = selection?.absolutePrice ?? product.pricing.finalPrice + (selection?.priceModifier ?? 0);
+  const previousPrice = product.pricing.basePrice === finalUnitPrice ? undefined : product.pricing.basePrice;
+
+  const updateVariant = (optionId: number) => {
+    const option = variantOptions.find((item) => item.productVariantOptionId === optionId);
+    if (!option) return;
+    setSelection(option);
   };
 
-  const validateCartItem = () => {
-    if (product.variants && product.variants.length > 0) {
-      const isComplete = product.variants.every(
-        (v) => selection.variants[v.label],
-      );
-      if (!isComplete) {
-        alert("Please select all required options");
-        return false;
-      }
+  const handleAddToCart = async () => {
+    if (authStatus !== "authenticated") {
+      router.push(`/login?next=/store/shop/product/${product.slug}`);
+      return;
     }
-    return true;
+
+    if (variantOptions.length > 0 && !selection) {
+      alert("Please select a variant");
+      return;
+    }
+
+    await dispatch(
+      addServerCartItem({
+        productDbId: product.id,
+        quantity: productQuantity,
+        selectedVariants: selection
+          ? [
+              {
+                productVariantId: selection.productVariantId,
+                productVariantOptionId: selection.productVariantOptionId,
+              },
+            ]
+          : [],
+      }),
+    ).unwrap();
+
+    setAdded(true);
+    setTimeout(() => setAdded(false), 1500);
   };
-
-  // Inside HandleCartLogicComponent
-  const basePrice = product.pricing.base_price;
-  const currencyCode = product.pricing.currency_code;
-
-  // Sum up all modifiers from our state
-  const totalModifiers = Object.values(selection.variants).reduce(
-    (acc, curr) => acc + curr.priceModifier,
-    0,
-  );
-
-  const finalUnitPrice = basePrice + totalModifiers;
-
-  // Format variants for the Redux CartItem type
-  const formattedVariantsForCart = Object.entries(selection.variants).map(
-    ([label, data]) => ({
-      label,
-      choice: data.value,
-      priceModifier: data.priceModifier,
-    }),
-  );
 
   return (
-    <ContainerSimple className="gap-3">
-      <GlassShowcase>
+    <ContainerSimple className="gap-5">
+      <ProductText
+        large
+        title={product.name || "Untitled artwork"}
+        titleClassNames="font-display text-[var(--ink)] font-semibold leading-tight"
+        currentPrice={finalUnitPrice}
+        oldPrice={previousPrice}
+        displayPrice
+        currencyCode={product.pricing.currencyCode || "INR"}
+        description={product.content.description || product.content.shortDescription || ""}
+        notificationText={product.taxonomy.isFeatured ? "Featured" : undefined}
+      />
+
+      <div className="w-fit">
         <QuantitySelector
           onChange={setProductQuantity}
           value={productQuantity}
-          classNames="w-full justify-between glassmorph glass-noise rounded-xl"
+          classNames="justify-between rounded-full border border-[var(--ink)] bg-transparent px-4 py-2"
         />
-      </GlassShowcase>
+      </div>
 
-      {product.variants && product.variants.length > 0 && (
-        <Grid>
-          {product.variants.map((variant) => (
-            <VariantSelector 
-              key={variant.label} label={variant.label}
-              // Extract just the strings for the UI options
-              options={variant.options.map((op) => op.value)}
-              // Access the nested value property
-              value={selection.variants[variant.label]?.value || ""}
-              onChange={(v) => {
-                // Find the full option object to get its priceModifier
-                const optionData = variant.options.find((opt) => opt.value === v);
-                updateVariants( variant.label, v, optionData?.priceModifier || 0);
-              }}
-              classNames="col-12 lg:col-6"
-            />
-          ))}
-        </Grid>
+      {variantOptions.length > 0 && (
+        <VariantSelector
+          label="Variant"
+          options={variantOptions.map((option) => ({
+            id: option.productVariantOptionId,
+            label: option.label,
+          }))}
+          value={selection?.productVariantOptionId}
+          onChange={updateVariant}
+        />
       )}
 
-      <AddToCartButton
-        product={{
-          ...product,
-          pricing: {
-            base_price:basePrice,
-            base_price_low_denomination:basePrice*100,
-            currency_code:currencyCode,
-            final_price:finalUnitPrice,
-            final_price_low_denomination: finalUnitPrice*100
-          } // The original price
-        }}
-        quantity={productQuantity}
-        selectedVariants={formattedVariantsForCart}
-        onAdd={validateCartItem}
-      />
+      {selection && (
+        <p className="text-sm font-medium text-[var(--ink-soft)]">
+          Selected: <span className="text-[var(--ink)]">{selection.label}</span>
+        </p>
+      )}
+
+      <button
+        onClick={handleAddToCart}
+        disabled={cartStatus === "loading"}
+        className={`relative overflow-hidden rounded-full px-8 py-4 font-medium transition-all duration-300 disabled:opacity-60 ${
+          added ? "bg-[var(--accent-1)] text-white" : "bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--ink-soft)]"
+        }`}
+      >
+        {added ? "Added" : authStatus === "authenticated" ? "Add to Cart" : "Login to Add to Cart"}
+      </button>
     </ContainerSimple>
   );
 }

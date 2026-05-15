@@ -2,7 +2,6 @@
 import { ProductType } from "@/lib/api/ecommerce/types/product-type";
 import { useRouter } from "next/navigation";
 import DataTable from "../../../components/admin/masters-datatable";
-import { mockProducts } from "@/lib/api/ecommerce/mockdata/mock-product-data";
 import { createColumnHelper } from "@/components/admin/createColumnHelper";
 
 
@@ -23,7 +22,7 @@ const columns = [
   return (
     <div className="space-y-6">
       <DataTable 
-        data={mockProducts}
+        data={[]}
         columns={columns}
         onAdd={() => router.push('/products/new')}
         onEdit={(p) => router.push(`/products/${p.id}`)}
@@ -33,4 +32,3 @@ const columns = [
     </div>
   );
 }
-
