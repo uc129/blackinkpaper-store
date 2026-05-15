@@ -90,7 +90,7 @@
   --text-display-tablet: clamp(2.75rem, 8vw, 5rem);
   --text-display-caption: clamp(1.2rem, 1.6vw, 1.7rem);
   --text-caption: clamp(1.05rem, 1.4vw, 1.35rem);
-  --text-title: clamp(2.6rem, 5vw, 4.7rem);
+  --text-title: clamp(3rem, 8vw, 11.7rem);
 
   --text-h1: clamp(2.25rem, 4vw, 3.25rem);
   --text-h2: clamp(1.75rem, 3vw, 2.4rem);
@@ -118,8 +118,8 @@
   --grid-columns: 12;
   --grid-gutter: var(--space-4); /* 16px */
   --grid-margin: var(--space-5); /* 24px */
-  --container-max: 1280px;
-  --page-max: 1280px;
+  --container-max: 1480px;
+  --page-max: 1480px;
   --navbar-height: 5rem;
 
   --page-height: calc(

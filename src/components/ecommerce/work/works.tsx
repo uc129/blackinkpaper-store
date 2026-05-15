@@ -11,7 +11,7 @@ export default function WorkProjectsGrid({ products = [] }: { products?: Product
 
     return (
         <ContainerSimple className="gap-16">
-            <Heading size="title" className="font-display text-center text-[var(--ink)]">My Works</Heading>
+            <Heading size="h1" className="font-display text-center text-[var(--ink)]">My Works</Heading>
             <div className="mx-auto grid gap-x-12 gap-y-20 items-center align-center w-full">
                 {products.slice(0, 4).map((product, index) => (
                     <div key={product.slug || product.id} className="col-12 lg:col-6">
