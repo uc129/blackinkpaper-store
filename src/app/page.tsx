@@ -11,22 +11,34 @@ import { StoreServerError } from "@/components/ecommerce/StoreServerError";
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const productPage = await storefrontProductService
-    .getProducts({
-      IsAvailable: true,
-      Page: 1,
-      PageSize: 8,
-    })
-    .catch(() => null);
+  const [productPage, portfolioPage] = await Promise.all([
+    storefrontProductService
+      .getProducts({
+        IsAvailable: true,
+        Page: 1,
+        PageSize: 8,
+      })
+      .catch(() => null),
+    storefrontProductService
+      .getProducts({
+        IsAvailable: false,
+        Page: 1,
+        PageSize: 4,
+      })
+      .catch(() => null),
+  ]);
   const products = productPage?.items ?? [];
+  const portfolioWorks = portfolioPage?.items ?? [];
 
   return (
     <Page className="home landing">
       {/* <PageToolbar hide={false} /> */}
       <Hero />
-      <Section className="mx-auto text-center">
-        <WorkProjectsGrid products={products} />
-      </Section>
+      {portfolioWorks.length > 0 && (
+        <Section className="mx-auto text-center">
+          <WorkProjectsGrid products={portfolioWorks} />
+        </Section>
+      )}
       <Section className="mx-auto text-center">
         {productPage ? <OriginalWorksBanner products={products} /> : <StoreServerError />}
       </Section>

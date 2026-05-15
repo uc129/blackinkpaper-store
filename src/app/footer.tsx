@@ -36,6 +36,7 @@ export default function Footer() {
                         <ul className="space-y-4">
                             {[
                                 ["Store", "/store"],
+                                ["Portfolio", "/works"],
                                 ["Black & White", "/store/shop/category/black-and-white"],
                                 ["Cityscapes", "/store/shop/category/cityscapes"],
                                 ["About", "/about"],
