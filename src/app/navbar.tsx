@@ -105,7 +105,7 @@ const Navbar = () => {
                 </div>
 
                 <div className="layout-navbar pb-10 pt-6 sm:pt-10">
-                    <div ref={overlayRef} className="flex flex-col gap-4 text-[clamp(2rem,9vw,3.35rem)] leading-[1.06] sm:gap-5">
+                    <div ref={overlayRef} className="flex flex-col gap-4 text-[clamp(3.15rem,11vw,4.25rem)] leading-[1.02] sm:gap-5">
                         {primaryNavItems.map((item) => (
                             <NavLink key={item.href} text={item.text} href={item.href} onClick={() => setOpen(false)} />
                         ))}
