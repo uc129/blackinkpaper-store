@@ -104,7 +104,7 @@ export default function Sidebar() {
             UC
           </div>
           <div className="flex-1 overflow-hidden">
-            <p className="text-xs font-medium truncate">Utkarsh C.</p>
+            <p className="text-xs font-medium truncate">Ria M.</p>
             <p className="text-[10px] text-slate-500 truncate">Administrator</p>
           </div>
         </div>
