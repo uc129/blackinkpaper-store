@@ -1,31 +1,18 @@
+import CardSimple from "@/components/_ui/cards/card-simple";
 import Page from "@/components/_ui/containers/base/page";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { Heading } from "@/components/_ui/primitives/heading";
-import CardSimple from "@/components/_ui/cards/card-simple";
-import { storefrontCategories } from "@/lib/api/storefront/categories";
-import { storefrontProductService } from "@/lib/api/storefront/services";
-import type { ProductSummaryDto } from "@/lib/api/storefront/types";
+import { StoreServerError } from "@/components/ecommerce/StoreServerError";
+import {
+  getCatalogLabel,
+  getCategoryPath,
+  getStorefrontCatalog,
+} from "@/lib/api/storefront/categories";
 
 export const dynamic = "force-dynamic";
 
-function getCategoryCoverImage(products: ProductSummaryDto[], categoryId: number) {
-  const categoryProduct = products.find(
-    (product) =>
-      product.taxonomy.categoryId === categoryId &&
-      (product.media.coverImageUrl || product.media.headerImageUrl),
-  );
-  return categoryProduct?.media.coverImageUrl || categoryProduct?.media.headerImageUrl || null;
-}
-
 export default async function CategoryListPage() {
-  const productPage = await storefrontProductService
-    .getProducts({
-      IsAvailable: true,
-      Page: 1,
-      PageSize: 48,
-    })
-    .catch(() => null);
-  const products = productPage?.items ?? [];
+  const catalog = await getStorefrontCatalog().catch(() => null);
 
   return (
     <Page>
@@ -33,18 +20,29 @@ export default async function CategoryListPage() {
         <Heading size="title" className="text-center">
           Categories
         </Heading>
-        <div className="grid gap-6">
-          {storefrontCategories.map((category) => (
-            <div key={category.slug} className="col-12 lg:col-6 2xl:col-4">
-              <CardSimple
-                linkHref={`/store/shop/category/${category.slug}`}
-                imageSrc={getCategoryCoverImage(products, category.categoryId)}
-                title={category.label}
-                showTitle
-              />
+        {catalog ? (
+          catalog.length > 0 ? (
+            <div className="grid gap-6">
+              {catalog.map((category) => (
+                <div key={category.id} className="col-12 lg:col-6">
+                  <CardSimple
+                    linkHref={getCategoryPath(category)}
+                    imageSrc={category.coverImageUrl}
+                    title={getCatalogLabel(category)}
+                    description={category.description || undefined}
+                    showDescription
+                  />
+                </div>
+              ))}
             </div>
-          ))}
-        </div>
+          ) : (
+            <p className="py-12 text-center text-[var(--ink-soft)]">
+              No collections are available right now.
+            </p>
+          )
+        ) : (
+          <StoreServerError message="Collections could not load because the store server is unavailable." />
+        )}
       </ContainerSimple>
     </Page>
   );
