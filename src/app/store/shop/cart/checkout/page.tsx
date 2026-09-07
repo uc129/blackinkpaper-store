@@ -1,19 +1,23 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { type FormEvent, useEffect, useState } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { Grid } from "@/components/_ui/containers/container-simple";
-import { OrderSummary } from "./order-summary-component";
-import { openRazorpayModal, RazorpayIntegration } from "./razorpay-integration";
-import { checkoutService, shippingAddressService } from "@/lib/api/storefront/services";
+import {
+  checkoutService,
+  shippingAddressService,
+} from "@/lib/api/storefront/services";
 import type {
   CheckoutPreviewDto,
   CreateShippingAddressRequest,
   ShippingAddressDto,
 } from "@/lib/api/storefront/types";
+import { cartHasAvailabilityIssues } from "@/lib/cart/availability";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { clearCartState, fetchCart } from "@/lib/redux/store/slices/cartSlice";
+import { OrderSummary } from "./order-summary-component";
+import { openRazorpayModal, RazorpayIntegration } from "./razorpay-integration";
 
 const emptyAddress: CreateShippingAddressRequest = {
   fullName: "",
@@ -34,26 +38,41 @@ export default function CheckoutPage() {
   const authStatus = useAppSelector((state) => state.auth.status);
   const cart = useAppSelector((state) => state.cart.cart);
   const [addresses, setAddresses] = useState<ShippingAddressDto[]>([]);
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(null);
+  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
+    null,
+  );
   const [addressForm, setAddressForm] = useState(emptyAddress);
   const [preview, setPreview] = useState<CheckoutPreviewDto | null>(null);
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const hasAvailabilityIssues = cartHasAvailabilityIssues(cart);
 
   useEffect(() => {
-    if (authStatus === "unauthenticated") router.push("/login?next=/store/shop/cart/checkout");
+    if (authStatus === "unauthenticated")
+      router.push("/login?next=/store/shop/cart/checkout");
     if (authStatus === "authenticated") {
       dispatch(fetchCart());
-      shippingAddressService.list().then((items) => {
-        setAddresses(items);
-        const defaultAddress = items.find((address) => address.isDefault) || items[0];
-        if (defaultAddress) setSelectedAddressId(defaultAddress.id);
-      }).catch((err) => setError(err.message));
+      shippingAddressService
+        .list()
+        .then((items) => {
+          setAddresses(items);
+          const defaultAddress =
+            items.find((address) => address.isDefault) || items[0];
+          if (defaultAddress) setSelectedAddressId(defaultAddress.id);
+        })
+        .catch((err) => setError(err.message));
     }
   }, [authStatus, dispatch, router]);
 
   useEffect(() => {
+    if (hasAvailabilityIssues) {
+      setPreview(null);
+      setError(
+        "Your cart contains an unavailable item or an invalid quantity. Return to your cart to fix it.",
+      );
+      return;
+    }
     if (!selectedAddressId) {
       setPreview(null);
       return;
@@ -62,7 +81,7 @@ export default function CheckoutPage() {
       .preview({ shippingAddressId: selectedAddressId, notes })
       .then(setPreview)
       .catch((err) => setError(err.message));
-  }, [selectedAddressId, notes]);
+  }, [hasAvailabilityIssues, selectedAddressId, notes]);
 
   useEffect(() => {
     if (authStatus === "authenticated" && cart && cart.items.length === 0) {
@@ -80,6 +99,12 @@ export default function CheckoutPage() {
   };
 
   const handlePayment = async () => {
+    if (hasAvailabilityIssues) {
+      setError(
+        "Please return to your cart and resolve availability issues before paying.",
+      );
+      return;
+    }
     if (!selectedAddressId) {
       setError("Please select or create a shipping address.");
       return;
@@ -104,7 +129,9 @@ export default function CheckoutPage() {
           dispatch(fetchCart());
           router.push(`/account/orders/${order.id}`);
         } catch (err) {
-          setError(err instanceof Error ? err.message : "Payment verification failed");
+          setError(
+            err instanceof Error ? err.message : "Payment verification failed",
+          );
         }
       });
     } catch (err) {
@@ -119,12 +146,17 @@ export default function CheckoutPage() {
       <Grid className="items-start gap-12">
         <div className="col-12 lg:col-7 flex flex-col gap-8">
           <section className="store-surface p-6">
-            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">1. Shipping Address</h2>
+            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
+              1. Shipping Address
+            </h2>
 
             {addresses.length > 0 && (
               <div className="space-y-3 mb-8">
                 {addresses.map((address) => (
-                  <label key={address.id} className="flex items-start gap-3 border border-[var(--border)] bg-[var(--paper)] p-4">
+                  <label
+                    key={address.id}
+                    className="flex items-start gap-3 border border-[var(--border)] bg-[var(--paper)] p-4"
+                  >
                     <input
                       type="radio"
                       checked={selectedAddressId === address.id}
@@ -134,7 +166,8 @@ export default function CheckoutPage() {
                     <span className="text-sm">
                       <strong>{address.fullName}</strong>
                       <br />
-                      {address.addressLine1}, {address.city}, {address.state} {address.postalCode}
+                      {address.addressLine1}, {address.city}, {address.state}{" "}
+                      {address.postalCode}
                       <br />
                       {address.phoneNumber}
                     </span>
@@ -144,34 +177,120 @@ export default function CheckoutPage() {
             )}
 
             <form onSubmit={handleCreateAddress} className="grid gap-4">
-              <input className="p-3" placeholder="Full name" value={addressForm.fullName || ""} onChange={(e) => setAddressForm({ ...addressForm, fullName: e.target.value })} required />
-              <input className="p-3" placeholder="Phone number" value={addressForm.phoneNumber || ""} onChange={(e) => setAddressForm({ ...addressForm, phoneNumber: e.target.value })} required />
-              <input className="p-3" placeholder="Address line 1" value={addressForm.addressLine1 || ""} onChange={(e) => setAddressForm({ ...addressForm, addressLine1: e.target.value })} required />
-              <input className="p-3" placeholder="Address line 2" value={addressForm.addressLine2 || ""} onChange={(e) => setAddressForm({ ...addressForm, addressLine2: e.target.value })} />
+              <input
+                className="p-3"
+                placeholder="Full name"
+                value={addressForm.fullName || ""}
+                onChange={(e) =>
+                  setAddressForm({ ...addressForm, fullName: e.target.value })
+                }
+                required
+              />
+              <input
+                className="p-3"
+                placeholder="Phone number"
+                value={addressForm.phoneNumber || ""}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    phoneNumber: e.target.value,
+                  })
+                }
+                required
+              />
+              <input
+                className="p-3"
+                placeholder="Address line 1"
+                value={addressForm.addressLine1 || ""}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    addressLine1: e.target.value,
+                  })
+                }
+                required
+              />
+              <input
+                className="p-3"
+                placeholder="Address line 2"
+                value={addressForm.addressLine2 || ""}
+                onChange={(e) =>
+                  setAddressForm({
+                    ...addressForm,
+                    addressLine2: e.target.value,
+                  })
+                }
+              />
               <div className="grid md:grid-cols-2 gap-4">
-                <input className="p-3" placeholder="City" value={addressForm.city || ""} onChange={(e) => setAddressForm({ ...addressForm, city: e.target.value })} required />
-                <input className="p-3" placeholder="State" value={addressForm.state || ""} onChange={(e) => setAddressForm({ ...addressForm, state: e.target.value })} required />
-                <input className="p-3" placeholder="Postal code" value={addressForm.postalCode || ""} onChange={(e) => setAddressForm({ ...addressForm, postalCode: e.target.value })} required />
-                <input className="p-3" placeholder="Country code" value={addressForm.countryCode || ""} onChange={(e) => setAddressForm({ ...addressForm, countryCode: e.target.value })} required />
+                <input
+                  className="p-3"
+                  placeholder="City"
+                  value={addressForm.city || ""}
+                  onChange={(e) =>
+                    setAddressForm({ ...addressForm, city: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  className="p-3"
+                  placeholder="State"
+                  value={addressForm.state || ""}
+                  onChange={(e) =>
+                    setAddressForm({ ...addressForm, state: e.target.value })
+                  }
+                  required
+                />
+                <input
+                  className="p-3"
+                  placeholder="Postal code"
+                  value={addressForm.postalCode || ""}
+                  onChange={(e) =>
+                    setAddressForm({
+                      ...addressForm,
+                      postalCode: e.target.value,
+                    })
+                  }
+                  required
+                />
+                <input
+                  className="p-3"
+                  placeholder="Country code"
+                  value={addressForm.countryCode || ""}
+                  onChange={(e) =>
+                    setAddressForm({
+                      ...addressForm,
+                      countryCode: e.target.value,
+                    })
+                  }
+                  required
+                />
               </div>
-              <button type="submit" className="rounded-full border border-[var(--ink)] px-5 py-3 font-semibold transition hover:bg-[var(--ink)] hover:text-[var(--paper)]">
+              <button
+                type="submit"
+                className="rounded-full border border-[var(--ink)] px-5 py-3 font-semibold transition hover:bg-[var(--ink)] hover:text-[var(--paper)]"
+              >
                 Save Address
               </button>
             </form>
           </section>
 
           <section className="store-surface p-6">
-            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">2. Payment</h2>
+            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
+              2. Payment
+            </h2>
             <textarea
               className="w-full p-3 mb-4"
               placeholder="Order notes"
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
             />
-            {error && <p className="text-sm text-[var(--danger)] mb-4">{error}</p>}
+            {error && (
+              <p className="text-sm text-[var(--danger)] mb-4">{error}</p>
+            )}
             <button
+              type="button"
               onClick={handlePayment}
-              disabled={!preview || isLoading}
+              disabled={!preview || isLoading || hasAvailabilityIssues}
               className="w-full rounded-full bg-[var(--ink)] text-[var(--paper)] py-4 font-bold hover:bg-[var(--ink-soft)] disabled:bg-[var(--muted)]"
             >
               {isLoading ? "Starting payment..." : "Pay with Razorpay"}

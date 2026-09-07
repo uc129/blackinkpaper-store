@@ -5,6 +5,22 @@ export type PagedResult<T> = {
   totalCount: number;
 };
 
+export type ProductCategoryLookupDto = {
+  id: number;
+  nameCode?: string | null;
+  name?: string | null;
+  printName?: string | null;
+  slug?: string | null;
+  description?: string | null;
+  coverImageUrl?: string | null;
+  isActive: boolean;
+  isFeatured: boolean;
+};
+
+export type ProductSubCategoryLookupDto = ProductCategoryLookupDto & {
+  categoryId: number;
+};
+
 export type ProductPricingDto = {
   basePrice: number;
   finalPrice: number;
@@ -91,6 +107,13 @@ export type ArtSpecificationsDto = {
   fileFormat?: string | null;
   resolutionDpi?: number | null;
   pixelDimensions?: string | null;
+  paperType?: string | null;
+  paperWeight?: string | null;
+  inkType?: string | null;
+  isOriginal: boolean;
+  isSigned: boolean;
+  hasCertificate: boolean;
+  framingStatus?: string | null;
 };
 
 export type ProductSummaryDto = {
@@ -104,9 +127,10 @@ export type ProductSummaryDto = {
   media: ProductMediaDto;
   stats: ProductStatsDto;
   isUsingStandardVariants: boolean;
+  isOriginal: boolean;
 };
 
-export type ProductResponseDto = ProductSummaryDto & {
+export type ProductResponseDto = Omit<ProductSummaryDto, "isOriginal"> & {
   artSpecs?: ArtSpecificationsDto | null;
   content: ProductTextContentDto;
   audit?: {
@@ -128,6 +152,8 @@ export type ProductListQuery = {
   TagId?: number;
   IsAvailable?: boolean;
   IsFeatured?: boolean;
+  CategorySlug?: string;
+  SubCategorySlug?: string;
   Page?: number;
   PageSize?: number;
 };
@@ -189,6 +215,9 @@ export type CartItemDto = {
   sku?: string | null;
   fulfillmentType?: string | null;
   selectedVariants: CartSelectedVariantDto[];
+  isOriginal?: boolean;
+  isAvailable?: boolean;
+  availableStockQuantity?: number | null;
 };
 
 export type CartResponseDto = {
@@ -246,6 +275,9 @@ export type CheckoutItemDto = {
   lineTotal: number;
   sku?: string | null;
   fulfillmentType?: string | null;
+  isOriginal?: boolean;
+  isAvailable?: boolean;
+  availableStockQuantity?: number | null;
   selectedVariants: {
     productVariantId: number;
     productVariantOptionId: number;
