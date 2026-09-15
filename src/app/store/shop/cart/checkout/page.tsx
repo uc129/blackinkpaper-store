@@ -61,8 +61,6 @@ export default function CheckoutPage() {
   const hasAvailabilityIssues = cartHasAvailabilityIssues(cart);
 
   useEffect(() => {
-    if (authStatus === "unauthenticated")
-      router.push("/login?next=/store/shop/cart/checkout");
     if (authStatus === "authenticated") {
       dispatch(fetchCart());
       shippingAddressService
@@ -75,9 +73,13 @@ export default function CheckoutPage() {
         })
         .catch((err) => setError(err.message));
     }
-  }, [authStatus, dispatch, router]);
+  }, [authStatus, dispatch]);
 
   useEffect(() => {
+    if (authStatus !== "authenticated") {
+      setPreview(null);
+      return;
+    }
     if (hasAvailabilityIssues) {
       setPreview(null);
       setError(
@@ -93,7 +95,7 @@ export default function CheckoutPage() {
       .preview({ shippingAddressId: selectedAddressId, notes })
       .then(setPreview)
       .catch((err) => setError(err.message));
-  }, [hasAvailabilityIssues, selectedAddressId, notes]);
+  }, [authStatus, hasAvailabilityIssues, selectedAddressId, notes]);
 
   useEffect(() => {
     if (authStatus === "authenticated" && cart && cart.items.length === 0) {
@@ -204,6 +206,93 @@ export default function CheckoutPage() {
       setIsLoading(false);
     }
   };
+
+  if (authStatus === "idle" || authStatus === "loading") {
+    return (
+      <Page className="py-16">
+        <p className="text-center text-[var(--ink-soft)]">
+          Preparing checkout...
+        </p>
+      </Page>
+    );
+  }
+
+  if (authStatus === "unauthenticated") {
+    if (!cart || cart.items.length === 0) {
+      return (
+        <Page className="py-16">
+          <div className="store-surface mx-auto max-w-2xl p-8 text-center md:p-12">
+            <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+              Checkout
+            </p>
+            <h1 className="font-display text-4xl font-bold text-[var(--ink)] md:text-5xl">
+              Your cart is empty.
+            </h1>
+            <p className="mx-auto mt-4 max-w-lg leading-7 text-[var(--ink-soft)]">
+              Choose an artwork or print before starting checkout.
+            </p>
+            <Button
+              href="/store"
+              variant="pill"
+              size="pill_lg"
+              className="mt-8"
+            >
+              Browse the store
+            </Button>
+          </div>
+        </Page>
+      );
+    }
+
+    return (
+      <Page className="py-10 md:py-16">
+        <header className="mb-10 border-b border-[var(--border)] pb-8">
+          <p className="mb-3 text-xs font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+            Checkout
+          </p>
+          <h1 className="font-display text-4xl font-bold text-[var(--ink)] md:text-6xl">
+            Your order is ready to review.
+          </h1>
+        </header>
+
+        <Grid className="items-start gap-12">
+          <section className="col-12 lg:col-7 store-surface p-6 md:p-8">
+            <p className="mb-3 text-sm font-semibold uppercase tracking-[0.16em] text-[var(--ink-soft)]">
+              Next step
+            </p>
+            <h2 className="font-display text-3xl font-bold text-[var(--ink)]">
+              Sign in to continue
+            </h2>
+            <p className="mt-4 max-w-xl leading-7 text-[var(--ink-soft)]">
+              Your selections are saved. Sign in or create an account to add a
+              delivery address, see the final shipping and tax amounts, and
+              complete payment.
+            </p>
+            <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+              <Button
+                href="/login?next=/store/shop/cart/checkout"
+                variant="pill"
+                size="pill_lg"
+              >
+                Sign in to checkout
+              </Button>
+              <Button
+                href="/register?next=/store/shop/cart/checkout"
+                variant="outline"
+                size="pill_lg"
+              >
+                Create an account
+              </Button>
+            </div>
+          </section>
+
+          <div className="col-12 lg:col-5">
+            <OrderSummary preview={null} />
+          </div>
+        </Grid>
+      </Page>
+    );
+  }
 
   return (
     <Page className="py-10 md:py-16">

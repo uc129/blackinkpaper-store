@@ -6,20 +6,16 @@ import { type FormEvent, Suspense, useState } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { Button } from "@/components/_ui/primitives/button";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
+import { getSafeNextPath } from "@/lib/navigation/safe-next-path";
 import { login } from "@/lib/redux/store/slices/authSlice";
-import { fetchCart } from "@/lib/redux/store/slices/cartSlice";
-
-function getSafeNextPath(nextPath: string | null) {
-  return nextPath?.startsWith("/") && !nextPath.startsWith("//")
-    ? nextPath
-    : "/store";
-}
+import { mergeGuestCartIntoServer } from "@/lib/redux/store/slices/cartSlice";
 
 function LoginForm() {
   const router = useRouter();
   const params = useSearchParams();
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
+  const cartError = useAppSelector((state) => state.cart.error);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const nextPath = getSafeNextPath(params.get("next"));
@@ -28,7 +24,7 @@ function LoginForm() {
     event.preventDefault();
     try {
       await dispatch(login({ email, password })).unwrap();
-      await dispatch(fetchCart());
+      await dispatch(mergeGuestCartIntoServer()).unwrap();
       router.push(nextPath);
     } catch {
       // The auth slice exposes the API error beside the form.
@@ -78,9 +74,9 @@ function LoginForm() {
               required
             />
           </label>
-          {auth.error && (
+          {(auth.error || cartError) && (
             <p className="text-sm text-[var(--danger)]" role="alert">
-              {auth.error}
+              {auth.error || cartError}
             </p>
           )}
           <Button
@@ -92,7 +88,10 @@ function LoginForm() {
           </Button>
           <p className="text-sm text-[var(--ink-soft)]">
             New here?{" "}
-            <Link className="store-link" href="/register">
+            <Link
+              className="store-link"
+              href={`/register?next=${encodeURIComponent(nextPath)}`}
+            >
               Create an account
             </Link>
           </p>

@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { type ReactNode, useEffect } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";
@@ -21,12 +20,13 @@ import {
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import {
   fetchCart,
+  removeGuestCartItem,
   removeServerCartItem,
+  updateGuestCartItemQuantity,
   updateServerCartItemQuantity,
 } from "@/lib/redux/store/slices/cartSlice";
 
 export default function CartPage() {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const { cart, status, error } = useAppSelector((state) => state.cart);
   const authStatus = useAppSelector((state) => state.auth.status);
@@ -40,17 +40,11 @@ export default function CartPage() {
     }
   }, [authStatus, dispatch]);
 
-  useEffect(() => {
-    if (authStatus === "unauthenticated") {
-      router.push("/login?next=/store/shop/cart");
-    }
-  }, [authStatus, router]);
-
   let cartContent: ReactNode;
-  if (authStatus !== "authenticated") {
+  if (authStatus === "idle" || authStatus === "loading") {
     cartContent = (
       <div className="p-10 text-center text-[var(--ink-soft)]">
-        Please log in to view your cart.
+        Loading cart...
       </div>
     );
   } else if (status === "loading" && !cart) {
@@ -164,13 +158,21 @@ export default function CartPage() {
                         className="w-16 p-2 text-center outline-none disabled:bg-[var(--paper-deep)] disabled:text-[var(--muted)]"
                         onChange={(e) =>
                           dispatch(
-                            updateServerCartItemQuantity({
-                              cartItemId: item.id,
-                              quantity: clampCartItemQuantity(
-                                item,
-                                Number.parseInt(e.target.value, 10) || 1,
-                              ),
-                            }),
+                            authStatus === "authenticated"
+                              ? updateServerCartItemQuantity({
+                                  cartItemId: item.id,
+                                  quantity: clampCartItemQuantity(
+                                    item,
+                                    Number.parseInt(e.target.value, 10) || 1,
+                                  ),
+                                })
+                              : updateGuestCartItemQuantity({
+                                  cartItemId: item.id,
+                                  quantity: clampCartItemQuantity(
+                                    item,
+                                    Number.parseInt(e.target.value, 10) || 1,
+                                  ),
+                                }),
                           )
                         }
                       />
@@ -189,7 +191,13 @@ export default function CartPage() {
                   <button
                     type="button"
                     className="text-[var(--danger)] text-xs font-semibold hover:underline transition-colors px-3 py-1.5"
-                    onClick={() => dispatch(removeServerCartItem(item.id))}
+                    onClick={() =>
+                      dispatch(
+                        authStatus === "authenticated"
+                          ? removeServerCartItem(item.id)
+                          : removeGuestCartItem(item.id),
+                      )
+                    }
                   >
                     Remove Item
                   </button>
@@ -222,13 +230,21 @@ export default function CartPage() {
                 </Button>
               </>
             ) : (
-              <Button
-                href="/store/shop/cart/checkout"
-                variant="pill"
-                className="w-full mt-6 py-4 font-bold"
-              >
-                Proceed to Checkout
-              </Button>
+              <>
+                {authStatus === "unauthenticated" && (
+                  <p className="text-sm text-[var(--ink-soft)]">
+                    You can review checkout next. Sign in is only required to
+                    continue with delivery and payment.
+                  </p>
+                )}
+                <Button
+                  href="/store/shop/cart/checkout"
+                  variant="pill"
+                  className="w-full mt-6 py-4 font-bold"
+                >
+                  Proceed to Checkout
+                </Button>
+              </>
             )}
           </div>
         </div>

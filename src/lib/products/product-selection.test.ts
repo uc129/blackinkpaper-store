@@ -35,8 +35,14 @@ const variants: ProductVariantDto[] = [
 ];
 
 describe("print variant selection", () => {
-  it("defaults each group to its first in-stock option", () => {
-    expect(createDefaultSelections(variants)).toEqual({ 1: 12, 2: 21 });
+  it("defaults a single-configuration product to one in-stock option", () => {
+    expect(createDefaultSelections(variants)).toEqual({ 1: 12 });
+  });
+
+  it("defaults every group only when the product requests one-per-group", () => {
+    expect(
+      createDefaultSelections(variants, undefined, "one-per-group"),
+    ).toEqual({ 1: 12, 2: 21 });
   });
 
   it("prefers an available explicit default, then server popularity rank", () => {
@@ -56,11 +62,25 @@ describe("print variant selection", () => {
 
   it("builds a complete multi-variant cart payload", () => {
     const selections = getSelectedOptions(variants, { 1: 12, 2: 21 });
-    expect(hasCompleteVariantSelection(variants, selections)).toBe(true);
+    expect(
+      hasCompleteVariantSelection(variants, selections, "one-per-group"),
+    ).toBe(true);
     expect(toCartVariantSelections(selections)).toEqual([
       { productVariantId: 1, productVariantOptionId: 12 },
       { productVariantId: 2, productVariantOptionId: 21 },
     ]);
+  });
+
+  it("accepts exactly one selection for a single-configuration product", () => {
+    const selection = getSelectedOptions(variants, { 2: 21 });
+
+    expect(hasCompleteVariantSelection(variants, selection)).toBe(true);
+    expect(
+      hasCompleteVariantSelection(
+        variants,
+        getSelectedOptions(variants, { 1: 12, 2: 21 }),
+      ),
+    ).toBe(false);
   });
 
   it("uses the first absolute price and the lowest tracked stock", () => {

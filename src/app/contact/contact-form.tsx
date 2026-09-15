@@ -20,6 +20,17 @@ const initialForm: ContactSubmission = {
   message: "",
 };
 
+const inquirySubjects = [
+  "Original artwork",
+  "Print enquiry",
+  "Commission",
+  "Existing order",
+  "Something else",
+] as const;
+
+const fieldClassName =
+  "h-12 rounded-none border-[var(--border)] bg-[var(--paper)] px-4 shadow-none";
+
 function getContactErrorMessage(error: unknown) {
   if (error instanceof ApiError) {
     if (error.status === 429)
@@ -68,75 +79,99 @@ export default function ContactForm() {
   const isSubmitting = status === "submitting";
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-4 text-left">
-      <div className="grid gap-2">
-        <TextLabel htmlFor="contact-name">Name</TextLabel>
-        <Input
-          id="contact-name"
-          name="name"
-          autoComplete="name"
-          value={form.name}
-          onChange={(event) => updateField("name", event.target.value)}
-          required
-        />
+    <form onSubmit={handleSubmit} className="flex flex-col gap-6 text-left">
+      <div className="flex flex-col gap-6 sm:flex-row">
+        <div className="flex flex-1 flex-col gap-2">
+          <TextLabel htmlFor="contact-name">Your name</TextLabel>
+          <Input
+            id="contact-name"
+            name="name"
+            autoComplete="name"
+            placeholder="Name"
+            value={form.name}
+            onChange={(event) => updateField("name", event.target.value)}
+            className={fieldClassName}
+            required
+          />
+        </div>
+
+        <div className="flex flex-1 flex-col gap-2">
+          <TextLabel htmlFor="contact-email">Email address</TextLabel>
+          <Input
+            id="contact-email"
+            name="email"
+            type="email"
+            autoComplete="email"
+            placeholder="you@example.com"
+            value={form.email}
+            onChange={(event) => updateField("email", event.target.value)}
+            className={fieldClassName}
+            required
+          />
+        </div>
       </div>
 
-      <div className="grid gap-2">
-        <TextLabel htmlFor="contact-email">Email</TextLabel>
-        <Input
-          id="contact-email"
-          name="email"
-          type="email"
-          autoComplete="email"
-          value={form.email}
-          onChange={(event) => updateField("email", event.target.value)}
-          required
-        />
-      </div>
-
-      <div className="grid gap-2">
-        <TextLabel htmlFor="contact-subject">Subject</TextLabel>
-        <Input
+      <div className="flex flex-col gap-2">
+        <TextLabel htmlFor="contact-subject">I&apos;m writing about</TextLabel>
+        <select
           id="contact-subject"
           name="subject"
           value={form.subject}
           onChange={(event) => updateField("subject", event.target.value)}
+          className={fieldClassName}
           required
-        />
+        >
+          <option value="" disabled>
+            Choose a subject
+          </option>
+          {inquirySubjects.map((subject) => (
+            <option key={subject} value={subject}>
+              {subject}
+            </option>
+          ))}
+        </select>
       </div>
 
-      <div className="grid gap-2">
-        <TextLabel htmlFor="contact-message">Message</TextLabel>
+      <div className="flex flex-col gap-2">
+        <TextLabel htmlFor="contact-message">Your message</TextLabel>
         <Textarea
           id="contact-message"
           name="message"
           rows={7}
+          placeholder="Tell me about the artwork, project, or order..."
           value={form.message}
           onChange={(event) => updateField("message", event.target.value)}
+          className="min-h-48 resize-y rounded-none border-[var(--border)] bg-[var(--paper)] p-4 shadow-none"
           required
         />
       </div>
 
       {status === "success" && (
-        <p className="rounded-lg border border-[var(--border)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--ink-soft)]">
+        <output className="border border-[var(--border)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--ink-soft)]">
           Your message has been sent. I will get back to you soon.
-        </p>
+        </output>
       )}
 
       {status === "error" && (
-        <p className="rounded-lg border border-[var(--danger)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--danger)]">
+        <p
+          className="border border-[var(--danger)] bg-[var(--paper)] px-4 py-3 text-sm text-[var(--danger)]"
+          role="alert"
+        >
           {errorMessage}
         </p>
       )}
 
-      <div className="pt-2">
+      <div className="flex flex-col gap-4 border-t border-[var(--border)] pt-6 sm:flex-row sm:items-center sm:justify-between">
+        <p className="text-xs leading-5 text-[var(--ink-soft)]">
+          All fields are required.
+        </p>
         <Button
           type="submit"
           variant="pill"
           size="pill_lg"
           disabled={isSubmitting}
         >
-          {isSubmitting ? "Sending..." : "Send Message"}
+          {isSubmitting ? "Sending..." : "Send enquiry"}
         </Button>
       </div>
     </form>

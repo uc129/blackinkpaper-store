@@ -56,6 +56,14 @@ export function OrderSummary({
                       x{item.quantity}
                     </span>
                   </p>
+                  {item.selectedVariants.length > 0 && (
+                    <p className="text-xs italic text-[var(--ink-soft)]">
+                      {item.selectedVariants
+                        .map((variant) => variant.optionValue)
+                        .filter(Boolean)
+                        .join(", ")}
+                    </p>
+                  )}
                   {isCartItemUnavailable(item) && (
                     <p className="text-xs text-[var(--danger)]">
                       No longer available

@@ -9,7 +9,6 @@ import { clearCartState } from "@/lib/redux/store/slices/cartSlice";
 
 const primaryNavItems = [
   { text: "Store", href: "/store" },
-  { text: "Portfolio", href: "/works" },
   { text: "About", href: "/about" },
   { text: "Contact", href: "/contact" },
 ];
