@@ -71,6 +71,9 @@ export type ProductImageDto = {
 export type ProductVariantOptionDto = {
   id: number;
   value?: string | null;
+  isDefault?: boolean | null;
+  popularityRank?: number | null;
+  displayOrder?: number | null;
   priceModifier?: number | null;
   absolutePrice?: number | null;
   stockQuantity?: number | null;
@@ -119,6 +122,8 @@ export type ArtSpecificationsDto = {
 export type ProductSummaryDto = {
   id: number;
   productId?: string | null;
+  artworkId?: string | null;
+  launchAt?: string | null;
   name?: string | null;
   slug?: string | null;
   artistId: number;
@@ -128,6 +133,14 @@ export type ProductSummaryDto = {
   stats: ProductStatsDto;
   isUsingStandardVariants: boolean;
   isOriginal: boolean;
+  shortDescription?: string | null;
+  isSigned?: boolean | null;
+  defaultOptionId?: number | null;
+  selectionMode?: "single-configuration" | "one-per-group" | null;
+  editorial?: {
+    isPublished: boolean;
+    slug?: string | null;
+  } | null;
 };
 
 export type ProductResponseDto = Omit<ProductSummaryDto, "isOriginal"> & {

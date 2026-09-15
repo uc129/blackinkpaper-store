@@ -24,11 +24,27 @@ export function isVariantOptionAvailable(
 
 export function createDefaultSelections(
   variants: ProductVariantDto[],
+  defaultOptionId?: number,
 ): SelectedOptionIds {
   return variants.reduce<SelectedOptionIds>((selections, variant) => {
-    const option = (variant.options || []).find((item) =>
+    const availableOptions = (variant.options || []).filter((item) =>
       isVariantOptionAvailable(variant, item),
     );
+    const explicitDefault = availableOptions.find(
+      (item) => item.id === defaultOptionId || item.isDefault === true,
+    );
+    const rankedDefault = availableOptions
+      .map((item, index) => ({ item, index }))
+      .sort((a, b) => {
+        const rankDifference =
+          (b.item.popularityRank ?? Number.NEGATIVE_INFINITY) -
+          (a.item.popularityRank ?? Number.NEGATIVE_INFINITY);
+        if (rankDifference !== 0) return rankDifference;
+        const orderDifference =
+          (a.item.displayOrder ?? a.index) - (b.item.displayOrder ?? b.index);
+        return orderDifference;
+      })[0]?.item;
+    const option = explicitDefault || rankedDefault;
     if (option) selections[variant.id] = option.id;
     return selections;
   }, {});
