@@ -5,12 +5,9 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { type FormEvent, Suspense, useState } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { Button } from "@/components/_ui/primitives/button";
-import { PhoneOtpForm } from "@/features/auth/phone-otp-form";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
-import { clearAuthError, login } from "@/lib/redux/store/slices/authSlice";
+import { login } from "@/lib/redux/store/slices/authSlice";
 import { fetchCart } from "@/lib/redux/store/slices/cartSlice";
-
-type LoginMethod = "phone" | "email";
 
 function getSafeNextPath(nextPath: string | null) {
   return nextPath?.startsWith("/") && !nextPath.startsWith("//")
@@ -23,15 +20,9 @@ function LoginForm() {
   const params = useSearchParams();
   const dispatch = useAppDispatch();
   const auth = useAppSelector((state) => state.auth);
-  const [method, setMethod] = useState<LoginMethod>("phone");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const nextPath = getSafeNextPath(params.get("next"));
-
-  const selectMethod = (nextMethod: LoginMethod) => {
-    setMethod(nextMethod);
-    dispatch(clearAuthError());
-  };
 
   const handleEmailSubmit = async (event: FormEvent) => {
     event.preventDefault();
@@ -52,86 +43,76 @@ function LoginForm() {
             Welcome
           </h1>
           <p className="mt-2 text-sm text-[var(--ink-soft)]">
-            Use your phone to sign in or create a customer account.
+            Sign in with your email to access your cart, checkout, and orders.
           </p>
         </div>
 
-        <fieldset className="grid grid-cols-2 gap-2">
-          <legend className="sr-only">Choose a login method</legend>
-          <Button
-            type="button"
-            variant={method === "phone" ? "primary" : "secondary"}
-            onClick={() => selectMethod("phone")}
-            aria-pressed={method === "phone"}
-          >
-            Phone
-          </Button>
-          <Button
-            type="button"
-            variant={method === "email" ? "primary" : "secondary"}
-            onClick={() => selectMethod("email")}
-            aria-pressed={method === "email"}
+        <form onSubmit={handleEmailSubmit} className="space-y-4">
+          <label
+            className="flex flex-col gap-2 text-sm font-medium"
+            htmlFor="login-email"
           >
             Email
-          </Button>
-        </fieldset>
-
-        {method === "phone" ? (
-          <PhoneOtpForm mode="login" onComplete={() => router.push(nextPath)} />
-        ) : (
-          <form onSubmit={handleEmailSubmit} className="space-y-4">
-            <label
-              className="flex flex-col gap-2 text-sm font-medium"
-              htmlFor="login-email"
-            >
-              Email
-              <input
-                id="login-email"
-                type="email"
-                autoComplete="email"
-                value={email}
-                onChange={(event) => setEmail(event.target.value)}
-                className="p-3"
-                required
-              />
-            </label>
-            <label
-              className="flex flex-col gap-2 text-sm font-medium"
-              htmlFor="login-password"
-            >
-              Password
-              <input
-                id="login-password"
-                type="password"
-                autoComplete="current-password"
-                value={password}
-                onChange={(event) => setPassword(event.target.value)}
-                className="p-3"
-                required
-              />
-            </label>
-            {auth.error && (
-              <p className="text-sm text-[var(--danger)]" role="alert">
-                {auth.error}
-              </p>
-            )}
-            <Button
-              type="submit"
-              className="w-full"
-              disabled={auth.status === "loading"}
-            >
-              {auth.status === "loading"
-                ? "Signing in..."
-                : "Sign in with email"}
-            </Button>
-            <p className="text-sm text-[var(--ink-soft)]">
-              Need an artist account?{" "}
-              <Link className="store-link" href="/register">
-                Register with email
-              </Link>
+            <input
+              id="login-email"
+              type="email"
+              autoComplete="email"
+              value={email}
+              onChange={(event) => setEmail(event.target.value)}
+              className="p-3"
+              required
+            />
+          </label>
+          <label
+            className="flex flex-col gap-2 text-sm font-medium"
+            htmlFor="login-password"
+          >
+            Password
+            <input
+              id="login-password"
+              type="password"
+              autoComplete="current-password"
+              value={password}
+              onChange={(event) => setPassword(event.target.value)}
+              className="p-3"
+              required
+            />
+          </label>
+          {auth.error && (
+            <p className="text-sm text-[var(--danger)]" role="alert">
+              {auth.error}
             </p>
-          </form>
-        )}
+          )}
+          <Button
+            type="submit"
+            className="w-full"
+            disabled={auth.status === "loading"}
+          >
+            {auth.status === "loading" ? "Signing in..." : "Sign in"}
+          </Button>
+          <p className="text-sm text-[var(--ink-soft)]">
+            New here?{" "}
+            <Link className="store-link" href="/register">
+              Create an account
+            </Link>
+          </p>
+        </form>
+
+        <aside
+          className="border border-[var(--border)] bg-[var(--paper-deep)] p-4"
+          aria-label="Phone login availability"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <p className="font-semibold text-[var(--ink)]">Phone login</p>
+            <span className="border border-[var(--border)] px-2 py-1 text-xs font-semibold uppercase tracking-wide text-[var(--ink-soft)]">
+              Coming soon
+            </span>
+          </div>
+          <p className="mt-2 text-sm text-[var(--ink-soft)]">
+            We are preparing password-free sign-in. Please use your email and
+            password for now.
+          </p>
+        </aside>
       </div>
     </Page>
   );
