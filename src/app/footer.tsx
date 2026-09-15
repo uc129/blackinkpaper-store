@@ -37,8 +37,6 @@ export default function Footer() {
                             {[
                                 ["Store", "/store"],
                                 ["Portfolio", "/works"],
-                                ["Black & White", "/store/shop/category/black-and-white"],
-                                ["Cityscapes", "/store/shop/category/cityscapes"],
                                 ["About", "/about"],
                                 ["Contact", "/contact"],
                             ].map(([item, href]) => (

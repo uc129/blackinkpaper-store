@@ -14,10 +14,14 @@ export default function ProductCardWithHover({
   notificationText?: string;
   priority?: boolean;
 }) {
-  const coverImage = product.media.coverImageUrl || product.media.headerImageUrl || null;
+  const coverImage =
+    product.media.coverImageUrl || product.media.headerImageUrl || null;
   const hoverImage = product.media.headerImageUrl || coverImage;
-  const hasHoverImage = Boolean(coverImage && hoverImage && hoverImage !== coverImage);
+  const hasHoverImage = Boolean(
+    coverImage && hoverImage && hoverImage !== coverImage,
+  );
   const hoverImageSrc = hasHoverImage ? hoverImage : null;
+  const soldOut = product.stats.stockQuantity === 0;
 
   return (
     <Link
@@ -25,6 +29,19 @@ export default function ProductCardWithHover({
       className="product-card-link group block"
     >
       <div className="relative aspect-[4/3] w-full overflow-hidden bg-[var(--paper-deep)]">
+        <span
+          className={`absolute left-4 top-4 z-2 rounded-full border px-3 py-1 text-xs font-medium ${
+            soldOut
+              ? "border-[var(--danger)] bg-[var(--paper)] text-[var(--danger)]"
+              : "border-[var(--border)] bg-[var(--paper)] text-[var(--ink)]"
+          }`}
+        >
+          {soldOut
+            ? "Sold out"
+            : product.isOriginal
+              ? "Original · 1 of 1"
+              : "Print"}
+        </span>
         {coverImage ? (
           <>
             <ImageWithFallback
@@ -60,7 +77,11 @@ export default function ProductCardWithHover({
 
         <div className="flex justify-between items-center">
           <PriceTag
-            previous={product.pricing.basePrice === product.pricing.finalPrice ? undefined : product.pricing.basePrice}
+            previous={
+              product.pricing.basePrice === product.pricing.finalPrice
+                ? undefined
+                : product.pricing.basePrice
+            }
             price={product.pricing.finalPrice}
             currencyCode={product.pricing.currencyCode || "INR"}
           />

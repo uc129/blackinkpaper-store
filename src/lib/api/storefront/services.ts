@@ -11,8 +11,10 @@ import type {
   PagedResult,
   PaymentSessionDto,
   PlaceOrderResponseDto,
+  ProductCategoryLookupDto,
   ProductListQuery,
   ProductResponseDto,
+  ProductSubCategoryLookupDto,
   ProductSummaryDto,
   RegisterRequest,
   RegisterResponse,
@@ -25,6 +27,15 @@ import type {
   VerifyPhoneAuthRequest,
   VerifyRazorpayPaymentRequest,
 } from "./types";
+
+export const storefrontCatalogService = {
+  getCategories: () =>
+    apiClient.get<ProductCategoryLookupDto[]>("/api/catalog/categories"),
+  getSubcategories: (categoryId: number) =>
+    apiClient.get<ProductSubCategoryLookupDto[]>("/api/catalog/subcategories", {
+      query: { categoryId },
+    }),
+};
 
 export const storefrontProductService = {
   getProducts: (query: ProductListQuery = {}) =>

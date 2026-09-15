@@ -1835,6 +1835,20 @@
             }
           },
           {
+            "name": "CategorySlug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SubCategorySlug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "Page",
             "in": "query",
             "schema": {
@@ -4209,6 +4223,20 @@
             }
           },
           {
+            "name": "CategorySlug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "SubCategorySlug",
+            "in": "query",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
             "name": "Page",
             "in": "query",
             "schema": {
@@ -4382,6 +4410,8 @@
     },
     "/api/seed": {
       "get": {
+    "/api/seed": {
+      "get": {
         "tags": [
           "Seed"
         ],
@@ -4393,6 +4423,7 @@
         }
       }
     },
+    "/api/seed/{set}": {
     "/api/seed/{set}": {
       "post": {
         "tags": [
@@ -4915,6 +4946,31 @@
             "nullable": true
           },
           "pixelDimensions": {
+            "type": "string",
+            "nullable": true
+          },
+          "paperType": {
+            "type": "string",
+            "nullable": true
+          },
+          "paperWeight": {
+            "type": "string",
+            "nullable": true
+          },
+          "inkType": {
+            "type": "string",
+            "nullable": true
+          },
+          "isOriginal": {
+            "type": "boolean"
+          },
+          "isSigned": {
+            "type": "boolean"
+          },
+          "hasCertificate": {
+            "type": "boolean"
+          },
+          "framingStatus": {
             "type": "string",
             "nullable": true
           },
@@ -6981,6 +7037,9 @@
           },
           "isOriginal": {
             "type": "boolean"
+          },
+          "isOriginal": {
+            "type": "boolean"
           }
         },
         "additionalProperties": false
@@ -7299,6 +7358,16 @@
             "nullable": true
           },
           "newPassword": {
+            "type": "string",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false
+      },
+      "ResolveContactSubmissionRequest": {
+        "type": "object",
+        "properties": {
+          "notes": {
             "type": "string",
             "nullable": true
           }
