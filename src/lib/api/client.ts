@@ -1,5 +1,3 @@
-import de from "zod/v4/locales/de.cjs";
-
 const BASE_URL = process.env.NEXT_PUBLIC_API_URL;
 const ACCESS_TOKEN_KEY = "blackinkpaper_access_token";
 const REFRESH_TOKEN_KEY = "blackinkpaper_refresh_token";
@@ -17,6 +15,8 @@ export type QueryParams = Record<string, QueryValue>;
 
 export class ApiError extends Error {
   status: number;
+  errorCode?: string;
+  metadata?: Record<string, unknown>;
   details: unknown;
 
   constructor(status: number, message: string, details?: unknown) {
@@ -24,6 +24,23 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.status = status;
     this.details = details;
+
+    if (details && typeof details === "object") {
+      const problem = details as {
+        errorCode?: unknown;
+        metadata?: unknown;
+      };
+      if (typeof problem.errorCode === "string") {
+        this.errorCode = problem.errorCode;
+      }
+      if (
+        problem.metadata &&
+        typeof problem.metadata === "object" &&
+        !Array.isArray(problem.metadata)
+      ) {
+        this.metadata = problem.metadata as Record<string, unknown>;
+      }
+    }
   }
 }
 
@@ -43,7 +60,11 @@ export function storeAuthTokens(
 ) {
   if (typeof window === "undefined") return;
   localStorage.setItem(ACCESS_TOKEN_KEY, accessToken);
-  if (refreshToken) localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  if (refreshToken) {
+    localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
+  } else {
+    localStorage.removeItem(REFRESH_TOKEN_KEY);
+  }
 }
 
 export function clearAuthTokens() {
@@ -99,11 +120,10 @@ async function request<T>(
   let token = auth ? getStoredAccessToken() : null;
   let res: Response | null = null;
   try {
-    debugger;
     res = await fetch(url, createFetchOptions(token));
-  } catch (e:any) {
-    console.error("Network error:", e);
-    throw new ApiError(0, "Network error", e);
+  } catch (error: unknown) {
+    console.error("Network error:", error);
+    throw new ApiError(0, "Network error", error);
   }
 
   if (auth && res.status === 401) {
