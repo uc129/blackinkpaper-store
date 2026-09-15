@@ -7,10 +7,7 @@ import { ProductGrid } from "@/components/ecommerce/ProductGrid";
 import { StoreServerError } from "@/components/ecommerce/StoreServerError";
 import { OriginalProductList } from "@/components/ecommerce/store/OriginalProductList";
 import { RecommendationList } from "@/components/ecommerce/store/RecommendationList";
-import {
-  StoreCategoryMenu,
-  StoreSubcategoryMenu,
-} from "@/components/ecommerce/store/StoreCategoryMenu";
+import { StoreCategoryMenu } from "@/components/ecommerce/store/StoreCategoryMenu";
 import { StorePagination } from "@/components/ecommerce/store/StorePagination";
 import {
   findCategoryBySlug,
@@ -114,10 +111,6 @@ export default async function SubcategoryDetailPage({
           </div>
 
           <StoreCategoryMenu catalog={catalog} activeCategorySlug={slug} />
-          <StoreSubcategoryMenu
-            category={category}
-            activeSubcategorySlug={subCategorySlug}
-          />
 
           <div id="products" className="scroll-mt-28">
             {productPage.items.length > 0 ? (
