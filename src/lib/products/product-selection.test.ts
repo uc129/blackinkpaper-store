@@ -39,6 +39,21 @@ describe("print variant selection", () => {
     expect(createDefaultSelections(variants)).toEqual({ 1: 12, 2: 21 });
   });
 
+  it("prefers an available explicit default, then server popularity rank", () => {
+    const rankedVariants: ProductVariantDto[] = [
+      {
+        ...variants[0],
+        options: [
+          { id: 11, value: "A4", stockQuantity: 2, popularityRank: 4 },
+          { id: 12, value: "A3", stockQuantity: 2, popularityRank: 9 },
+        ],
+      },
+    ];
+
+    expect(createDefaultSelections(rankedVariants)).toEqual({ 1: 12 });
+    expect(createDefaultSelections(rankedVariants, 11)).toEqual({ 1: 11 });
+  });
+
   it("builds a complete multi-variant cart payload", () => {
     const selections = getSelectedOptions(variants, { 1: 12, 2: 21 });
     expect(hasCompleteVariantSelection(variants, selections)).toBe(true);

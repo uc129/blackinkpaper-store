@@ -1,120 +1,171 @@
-'use client'
+"use client";
 
-import { use, useCallback, useEffect, useState } from 'react'
-import { EmblaCarouselType, EmblaOptionsType } from 'embla-carousel'
-import useEmblaCarousel from 'embla-carousel-react'
-import Autoplay from 'embla-carousel-autoplay'
-import ClassNames from 'embla-carousel-class-names'
-import Image from 'next/image'
-import './embla.css'
-import { NextButton, PrevButton } from './carousel-simple-buttons'
-import { ImageWithCaption } from '../../images/imageWithCaption'
-import { Button } from '../../primitives/button'
+import type { EmblaOptionsType } from "embla-carousel";
+import Autoplay from "embla-carousel-autoplay";
+import ClassNames from "embla-carousel-class-names";
+import useEmblaCarousel from "embla-carousel-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback";
+import { FrostedToolbar } from "@/components/_ui/interactive/artwork-controls";
+import {
+  NextButton,
+  PrevButton,
+  usePrevNextButtons,
+} from "./carousel-simple-buttons";
+import "./embla.css";
 
 export type GalleryItem = {
-    src: string
-    alt?: string
-    thumb?: string
-    title?: string
-    // Optional additional metadata for captions or other uses
-    [key: string]: any
-    subHtml?: string
-    download?: boolean
-    poster?: string
-    slideName?: string
-    slug?: string,
-}
+  src: string;
+  alt?: string;
+  thumb?: string;
+  title?: string;
+  slideName?: string;
+  slug?: string;
+};
 
 type Props = {
-    slides: GalleryItem[]
-    options?: EmblaOptionsType,
-    delay?: number
-    onImageClick?: (index: number, item: GalleryItem, event: React.MouseEvent) => void
-    actionButton?: {
-        label: string
-        hrefPrefix: string
-    }
+  slides: GalleryItem[];
+  options?: EmblaOptionsType;
+  delay?: number;
+  onImageClick?: (
+    index: number,
+    item: GalleryItem,
+    event: React.MouseEvent,
+  ) => void;
+  actionButton?: {
+    label: string;
+    hrefPrefix: string;
+  };
+};
 
-}
+export default function EmblaCarousel({
+  slides,
+  options,
+  delay = 8000,
+  onImageClick,
+  actionButton,
+}: Props) {
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const canLoop = slides.length >= 5;
+  const plugins = useMemo(
+    () => [
+      ...(reducedMotion || slides.length <= 1
+        ? []
+        : [Autoplay({ delay, stopOnInteraction: false })]),
+      ClassNames(),
+    ],
+    [delay, reducedMotion, slides.length],
+  );
+  const [emblaRef, emblaApi] = useEmblaCarousel(
+    {
+      align: "center",
+      loop: canLoop,
+      skipSnaps: false,
+      dragFree: false,
+      ...options,
+    },
+    plugins,
+  );
+  const [currentIndex, setCurrentIndex] = useState(0);
+  const {
+    nextBtnDisabled,
+    onNextButtonClick,
+    onPrevButtonClick,
+    prevBtnDisabled,
+  } = usePrevNextButtons(emblaApi);
 
-export default function EmblaCarousel({ slides, options, delay, onImageClick, actionButton }: Props) {
-    const [emblaRef, emblaApi] = useEmblaCarousel(
-        {
-            align: 'center',
-            loop: true,
-            skipSnaps: false,
-            dragFree: false,
-            ...options,
-        },
-        [
-            Autoplay({ delay: delay || 8000, stopOnInteraction: false }),
-            ClassNames(),
-        ]
-    )
+  useEffect(() => {
+    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const updatePreference = () => setReducedMotion(mediaQuery.matches);
+    updatePreference();
+    mediaQuery.addEventListener("change", updatePreference);
+    return () => mediaQuery.removeEventListener("change", updatePreference);
+  }, []);
 
-    const [currentIndex, setCurrentIndex] = useState(0);
-    useEffect(() => {
-        if (!emblaApi) return
+  useEffect(() => {
+    if (!emblaApi) return;
+    const onSelect = () => setCurrentIndex(emblaApi.selectedScrollSnap());
+    onSelect();
+    emblaApi.on("select", onSelect);
+    emblaApi.on("reInit", onSelect);
+    return () => {
+      emblaApi.off("select", onSelect);
+      emblaApi.off("reInit", onSelect);
+    };
+  }, [emblaApi]);
 
-        const onSelect = () => {
-            setCurrentIndex(emblaApi.selectedScrollSnap())
-        }
-        onSelect() // Set initial index
-        emblaApi.on('select', onSelect)
-        return () => {
-            emblaApi.off('select', onSelect)
-        }
-    }, [emblaApi])
+  if (slides.length === 0) return null;
 
-    const scrollPrev = useCallback(() => {
-        if (!emblaApi) return
-        emblaApi.scrollPrev()
-    }, [emblaApi])
+  const currentSlide = slides[currentIndex] ?? slides[0];
+  const productHref =
+    actionButton && currentSlide.slug
+      ? `${actionButton.hrefPrefix}/${currentSlide.slug}`
+      : "/store";
 
-    const scrollNext = useCallback(() => {
-        if (!emblaApi) return
-        emblaApi.scrollNext()
-    }, [emblaApi])
-
-
-
-    return (
-        <section className="embla">
-            <div className="embla__viewport" ref={emblaRef}>
-                <div className="embla__container">
-                    {slides.map((slide, index) => (
-                        <div className="embla__slide" key={index}>
-                            <div className="embla__slide__inner">
-                                <ImageWithCaption
-                                    src={slide.src}
-                                    alt={slide.alt || ''}
-                                    
-                                    fill
-                                    className="embla__slide__img min-h-96"
-                                    caption={slide.alt || ''}
-                                    onClick={(event) => onImageClick && onImageClick(index, slide, event)}
-                                // priority={index === 0}
-                                />
-                            </div>
-                        </div>
-                    ))}
-                </div>
+  return (
+    <section className="embla" aria-label="New artwork launches">
+      <div className="embla__viewport" ref={emblaRef}>
+        <div className="embla__container">
+          {slides.map((slide, index) => (
+            <div
+              className="embla__slide"
+              key={`${slide.src}-${slide.slug ?? index}`}
+            >
+              <button
+                type="button"
+                className="embla__slide__inner"
+                onClick={(event) => onImageClick?.(index, slide, event)}
+                aria-label={`Open ${slide.title || "artwork"} in full view`}
+              >
+                <ImageWithFallback
+                  src={slide.src}
+                  alt={slide.alt || ""}
+                  fill
+                  loading={index === 0 ? "eager" : "lazy"}
+                  fetchPriority={index === 0 ? "high" : "auto"}
+                  sizes="(min-width: 988px) 78vw, 88vw"
+                  className="embla__slide__img"
+                />
+              </button>
             </div>
+          ))}
+        </div>
+      </div>
 
-            <div className="embla__controls">
+      <FrostedToolbar className="embla__controls mt-0 rounded-b-[10px]">
+        <div className="min-w-11">
+          {slides.length > 1 && (
+            <PrevButton
+              onClick={onPrevButtonClick}
+              disabled={prevBtnDisabled}
+              aria-label="Previous artwork"
+            />
+          )}
+        </div>
 
-                <PrevButton onClick={scrollPrev} />
+        <Link
+          href={productHref}
+          className="min-w-0 text-center text-sm text-[var(--ink)] hover:underline"
+        >
+          <span className="block truncate font-medium">
+            {currentSlide.slideName || currentSlide.title || "Artwork"}
+          </span>
+          <span className="text-xs tabular-nums text-[var(--muted)]">
+            {currentIndex + 1} / {slides.length}
+          </span>
+        </Link>
 
-                {actionButton && actionButton.hrefPrefix && actionButton.label && (
-                    <Button variant="pill" size="pill_lg"
-                        href={actionButton.hrefPrefix && slides[currentIndex].slug ?
-                            `${actionButton.hrefPrefix}/${slides[currentIndex].slug}` : `/store`}  >
-                        {actionButton.label || 'Shop Now'}
-                    </Button>
-                )}
-
-                <NextButton onClick={scrollNext} />
-            </div>
-        </section>
-    )
+        <div className="flex min-w-11 justify-end">
+          {slides.length > 1 && (
+            <NextButton
+              onClick={onNextButtonClick}
+              disabled={nextBtnDisabled}
+              aria-label="Next artwork"
+            />
+          )}
+        </div>
+      </FrostedToolbar>
+    </section>
+  );
 }

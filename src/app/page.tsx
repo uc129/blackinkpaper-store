@@ -1,64 +1,75 @@
 import Page from "@/components/_ui/containers/base/page";
 import Section from "@/components/_ui/containers/base/section";
 import { StoreServerError } from "@/components/ecommerce/StoreServerError";
-import OriginalWorksBanner from "@/components/ecommerce/work/original-works-banner";
-import WorkProjectsGrid from "@/components/ecommerce/work/works";
 import AboutSection from "@/components/landing/about-section";
+import { FeaturedProductShowcase } from "@/components/landing/featured-product-showcase";
 import { LandingFlipbookContainer } from "@/components/landing/flipbook-container";
 import Hero from "@/components/landing/hero";
 import { storefrontProductService } from "@/lib/api/storefront/services";
+import { distinctArtworks } from "@/lib/storefront/products";
 
 export const dynamic = "force-dynamic";
 
 export default async function Home() {
-  const [productPage, originalPage, portfolioPage] = await Promise.all([
+  const [launchPage, originalPage, printPage] = await Promise.all([
     storefrontProductService
       .getProducts({
         IsAvailable: true,
         Page: 1,
-        PageSize: 8,
+        PageSize: 12,
       })
       .catch(() => null),
     storefrontProductService
       .getProducts({
         CategorySlug: "originals",
         IsAvailable: true,
+        IsFeatured: true,
         Page: 1,
-        PageSize: 3,
+        PageSize: 5,
       })
       .catch(() => null),
     storefrontProductService
       .getProducts({
-        IsAvailable: false,
+        CategorySlug: "prints",
+        IsAvailable: true,
+        IsFeatured: true,
         Page: 1,
-        PageSize: 4,
+        PageSize: 5,
       })
       .catch(() => null),
   ]);
-  const products = productPage?.items ?? [];
-  const originals =
-    originalPage?.items ?? products.filter((product) => product.isOriginal);
-  const portfolioWorks = portfolioPage?.items ?? [];
+  const launches = distinctArtworks(launchPage?.items ?? []);
+  const originals = distinctArtworks(
+    originalPage?.items.length
+      ? originalPage.items
+      : launches.filter((product) => product.isOriginal),
+  );
+  const prints = distinctArtworks(
+    printPage?.items.length
+      ? printPage.items
+      : launches.filter((product) => !product.isOriginal),
+  );
 
   return (
     <Page className="home landing">
-      {/* <PageToolbar hide={false} /> */}
       <Hero />
-      {portfolioWorks.length > 0 && (
-        <Section className="mx-auto text-center">
-          <WorkProjectsGrid products={portfolioWorks} />
-        </Section>
-      )}
-      <Section className="mx-auto text-center">
-        {originalPage || productPage ? (
-          <OriginalWorksBanner products={originals} />
+      <Section className="mx-auto py-16 lg:py-24">
+        {originalPage || launchPage ? (
+          <FeaturedProductShowcase products={originals} kind="original" />
         ) : (
           <StoreServerError />
         )}
       </Section>
-      <Section className="mx-auto text-center">
-        {productPage ? (
-          <LandingFlipbookContainer products={products} />
+      <Section className="mx-auto py-16 lg:py-24">
+        {printPage || launchPage ? (
+          <FeaturedProductShowcase products={prints} kind="print" />
+        ) : (
+          <StoreServerError />
+        )}
+      </Section>
+      <Section className="mx-auto py-16 text-center lg:py-24">
+        {launchPage ? (
+          <LandingFlipbookContainer products={launches} />
         ) : (
           <StoreServerError />
         )}
@@ -66,7 +77,6 @@ export default async function Home() {
       <Section className="mx-auto text-center">
         <AboutSection />
       </Section>
-      {/* <NewsletterSignup /> */}
     </Page>
   );
 }

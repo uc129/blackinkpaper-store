@@ -44,7 +44,7 @@ export default function HandleCartLogicComponent({
   const [added, setAdded] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedOptionIds, setSelectedOptionIds] = useState(() =>
-    createDefaultSelections(variants),
+    createDefaultSelections(variants, product.defaultOptionId ?? undefined),
   );
 
   const selections = useMemo(

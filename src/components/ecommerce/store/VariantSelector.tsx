@@ -19,7 +19,7 @@ export function VariantSelector({
   return (
     <div className={`flex flex-col gap-2 ${classNames}`}>
       <span className="text-sm font-medium text-[var(--ink)]">{label}</span>
-      <div className="flex flex-wrap gap-2">
+      <div className="variant-options-grid gap-2">
         {options.map((option) => {
           // const active = value === option
           return (
