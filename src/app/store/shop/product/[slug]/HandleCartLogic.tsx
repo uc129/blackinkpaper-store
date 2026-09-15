@@ -1,6 +1,5 @@
 "use client";
 
-import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { QuantitySelector } from "@/components/ecommerce/QuantitySelector";
@@ -18,7 +17,10 @@ import {
   isVariantOptionAvailable,
   toCartVariantSelections,
 } from "@/lib/products/product-selection";
-import { addServerCartItem } from "@/lib/redux/store/slices/cartSlice";
+import {
+  addGuestCartItem,
+  addServerCartItem,
+} from "@/lib/redux/store/slices/cartSlice";
 
 function getErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "message" in error) {
@@ -33,18 +35,22 @@ export default function HandleCartLogicComponent({
 }: {
   product: ProductResponseDto;
 }) {
-  const router = useRouter();
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector((state) => state.auth.status);
   const cartStatus = useAppSelector((state) => state.cart.status);
   const variants = product.variants || [];
+  const selectionMode = product.selectionMode ?? "single-configuration";
   const isOriginal = product.artSpecs?.isOriginal === true;
   const originalSoldOut = isOriginal && product.stats.stockQuantity === 0;
   const [productQuantity, setProductQuantity] = useState(1);
   const [added, setAdded] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [selectedOptionIds, setSelectedOptionIds] = useState(() =>
-    createDefaultSelections(variants, product.defaultOptionId ?? undefined),
+    createDefaultSelections(
+      variants,
+      product.defaultOptionId ?? undefined,
+      selectionMode,
+    ),
   );
 
   const selections = useMemo(
@@ -52,7 +58,8 @@ export default function HandleCartLogicComponent({
     [selectedOptionIds, variants],
   );
   const hasCompleteSelection =
-    isOriginal || hasCompleteVariantSelection(variants, selections);
+    isOriginal ||
+    hasCompleteVariantSelection(variants, selections, selectionMode);
   const selectedStockLimit = isOriginal ? 1 : getSelectedStockLimit(selections);
   const printSoldOut =
     !isOriginal &&
@@ -69,36 +76,47 @@ export default function HandleCartLogicComponent({
       : product.pricing.basePrice;
 
   const updateVariant = (variantId: number, optionId: number) => {
-    setSelectedOptionIds((current) => ({ ...current, [variantId]: optionId }));
+    setSelectedOptionIds((current) =>
+      selectionMode === "one-per-group"
+        ? { ...current, [variantId]: optionId }
+        : { [variantId]: optionId },
+    );
     setProductQuantity(1);
     setErrorMessage(null);
   };
 
   const handleAddToCart = async () => {
     setErrorMessage(null);
-    if (authStatus !== "authenticated") {
-      router.push(`/login?next=/store/shop/product/${product.slug}`);
-      return;
-    }
     if (soldOut) {
       setErrorMessage("This artwork is no longer available.");
       return;
     }
     if (!hasCompleteSelection) {
-      setErrorMessage("Please choose an option from every group.");
+      setErrorMessage(
+        selectionMode === "one-per-group"
+          ? "Please choose an option from every group."
+          : "Please choose one print option.",
+      );
       return;
     }
 
     try {
-      await dispatch(
-        addServerCartItem({
-          productDbId: product.id,
-          quantity: isOriginal ? 1 : productQuantity,
-          selectedVariants: isOriginal
-            ? []
-            : toCartVariantSelections(selections),
-        }),
-      ).unwrap();
+      const quantity = isOriginal ? 1 : productQuantity;
+      if (authStatus === "authenticated") {
+        await dispatch(
+          addServerCartItem({
+            productDbId: product.id,
+            quantity,
+            selectedVariants: isOriginal
+              ? []
+              : toCartVariantSelections(selections),
+          }),
+        ).unwrap();
+      } else {
+        await dispatch(
+          addGuestCartItem({ product, quantity, selections }),
+        ).unwrap();
+      }
       setAdded(true);
       window.setTimeout(() => setAdded(false), 1500);
     } catch (error) {
@@ -204,11 +222,9 @@ export default function HandleCartLogicComponent({
           ? "Sold out"
           : added
             ? "Added"
-            : authStatus === "authenticated"
-              ? isOriginal
-                ? "Acquire Original"
-                : "Add Print to Cart"
-              : "Login to Add to Cart"}
+            : isOriginal
+              ? "Acquire Original"
+              : "Add Print to Cart"}
       </button>
     </ContainerSimple>
   );

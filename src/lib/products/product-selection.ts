@@ -1,4 +1,5 @@
 import type {
+  ProductSummaryDto,
   ProductVariantDto,
   ProductVariantOptionDto,
 } from "@/lib/api/storefront/types";
@@ -9,6 +10,12 @@ export type ProductVariantSelection = {
 };
 
 export type SelectedOptionIds = Record<number, number>;
+
+export type VariantSelectionMode = NonNullable<
+  ProductSummaryDto["selectionMode"]
+>;
+
+const DEFAULT_SELECTION_MODE: VariantSelectionMode = "single-configuration";
 
 export function isVariantOptionAvailable(
   variant: ProductVariantDto,
@@ -25,7 +32,35 @@ export function isVariantOptionAvailable(
 export function createDefaultSelections(
   variants: ProductVariantDto[],
   defaultOptionId?: number,
+  selectionMode: VariantSelectionMode = DEFAULT_SELECTION_MODE,
 ): SelectedOptionIds {
+  if (selectionMode === "single-configuration") {
+    const availableOptions = variants
+      .flatMap((variant) =>
+        (variant.options || [])
+          .filter((option) => isVariantOptionAvailable(variant, option))
+          .map((option) => ({ variant, option })),
+      )
+      .map((selection, sourceOrder) => ({ ...selection, sourceOrder }));
+    const explicitDefault = availableOptions.find(
+      ({ option }) =>
+        option.id === defaultOptionId || option.isDefault === true,
+    );
+    const rankedDefault = availableOptions.sort((a, b) => {
+      const rankDifference =
+        (b.option.popularityRank ?? Number.NEGATIVE_INFINITY) -
+        (a.option.popularityRank ?? Number.NEGATIVE_INFINITY);
+      if (rankDifference !== 0) return rankDifference;
+      const orderDifference =
+        (a.option.displayOrder ?? a.sourceOrder) -
+        (b.option.displayOrder ?? b.sourceOrder);
+      return orderDifference || a.sourceOrder - b.sourceOrder;
+    })[0];
+    const selection = explicitDefault || rankedDefault;
+
+    return selection ? { [selection.variant.id]: selection.option.id } : {};
+  }
+
   return variants.reduce<SelectedOptionIds>((selections, variant) => {
     const availableOptions = (variant.options || []).filter((item) =>
       isVariantOptionAvailable(variant, item),
@@ -65,8 +100,12 @@ export function getSelectedOptions(
 export function hasCompleteVariantSelection(
   variants: ProductVariantDto[],
   selections: ProductVariantSelection[],
+  selectionMode: VariantSelectionMode = DEFAULT_SELECTION_MODE,
 ) {
-  return variants.length > 0 && selections.length === variants.length;
+  if (variants.length === 0) return false;
+  return selectionMode === "one-per-group"
+    ? selections.length === variants.length
+    : selections.length === 1;
 }
 
 export function getSelectedUnitPrice(

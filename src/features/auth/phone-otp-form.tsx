@@ -6,7 +6,7 @@ import { ApiError } from "@/lib/api/client";
 import { authService } from "@/lib/api/storefront/services";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { loginWithPhone, setProfile } from "@/lib/redux/store/slices/authSlice";
-import { fetchCart } from "@/lib/redux/store/slices/cartSlice";
+import { mergeGuestCartIntoServer } from "@/lib/redux/store/slices/cartSlice";
 
 const OTP_CODE_LENGTH = 6;
 const COUNTDOWN_INTERVAL_MS = 1_000;
@@ -107,7 +107,7 @@ export function PhoneOtpForm({ mode, onComplete }: PhoneOtpFormProps) {
 
       if (mode === "login") {
         await dispatch(loginWithPhone(payload)).unwrap();
-        await dispatch(fetchCart());
+        await dispatch(mergeGuestCartIntoServer()).unwrap();
       } else {
         await authService.linkPhone(payload);
         const profile = await authService.profile();

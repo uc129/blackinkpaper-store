@@ -14,8 +14,6 @@ export function VariantSelector({
   classNames,
   onChange,
 }: Props) {
-  const activeOptionId = value ?? options[0]?.id;
-
   return (
     <div className={`flex flex-col gap-2 ${classNames}`}>
       <span className="text-sm font-medium text-[var(--ink)]">{label}</span>
@@ -26,11 +24,11 @@ export function VariantSelector({
             <button
               type="button"
               key={option.id}
-              aria-pressed={activeOptionId === option.id}
+              aria-pressed={value === option.id}
               disabled={option.disabled}
               onClick={() => onChange(option.id)}
-              className={`px-4 py-2 border rounded-full text-sm transition-colors disabled:cursor-not-allowed disabled:border-[var(--border)] disabled:bg-[var(--paper-deep)] disabled:text-[var(--muted)]
-                                ${activeOptionId === option.id ? "bg-[var(--ink)] text-[var(--paper)] border-[var(--ink)]" : "border-[var(--border)] text-[var(--ink)] hover:border-[var(--ink)]"}
+              className={`border rounded-full px-4 py-2 text-sm transition-colors disabled:cursor-not-allowed disabled:border-[var(--border)] disabled:bg-[var(--paper-deep)] disabled:text-[var(--muted)]
+                                ${value === option.id ? "bg-[var(--ink)] text-[var(--paper)] border-[var(--ink)]" : "border-[var(--border)] text-[var(--ink)] hover:border-[var(--ink)]"}
                                 `}
             >
               {option.label}

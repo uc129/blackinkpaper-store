@@ -9,10 +9,7 @@ import { StoreServerError } from "@/components/ecommerce/StoreServerError";
 import { OriginalProductList } from "@/components/ecommerce/store/OriginalProductList";
 import { OriginalsAssurance } from "@/components/ecommerce/store/OriginalsAssurance";
 import { RecommendationList } from "@/components/ecommerce/store/RecommendationList";
-import {
-  StoreCategoryMenu,
-  StoreSubcategoryMenu,
-} from "@/components/ecommerce/store/StoreCategoryMenu";
+import { StoreCategoryMenu } from "@/components/ecommerce/store/StoreCategoryMenu";
 import { StorePagination } from "@/components/ecommerce/store/StorePagination";
 import {
   findCategoryBySlug,
@@ -128,7 +125,6 @@ export default async function CategoryDetailPage({
 
           {isOriginals && <OriginalsAssurance />}
           <StoreCategoryMenu catalog={catalog} activeCategorySlug={slug} />
-          <StoreSubcategoryMenu category={category} />
 
           <div id="products" className="scroll-mt-28">
             {productPage.items.length > 0 ? (
