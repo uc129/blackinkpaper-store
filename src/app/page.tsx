@@ -6,7 +6,10 @@ import { FeaturedProductShowcase } from "@/components/landing/featured-product-s
 import { LandingFlipbookContainer } from "@/components/landing/flipbook-container";
 import Hero from "@/components/landing/hero";
 import { storefrontProductService } from "@/lib/api/storefront/services";
-import { distinctArtworks } from "@/lib/storefront/products";
+import {
+  distinctArtworks,
+  distributeDistinctArtworks,
+} from "@/lib/storefront/products";
 
 export const dynamic = "force-dynamic";
 
@@ -38,16 +41,17 @@ export default async function Home() {
       })
       .catch(() => null),
   ]);
-  const launches = distinctArtworks(launchPage?.items ?? []);
-  const originals = distinctArtworks(
-    originalPage?.items.length
-      ? originalPage.items
-      : launches.filter((product) => product.isOriginal),
-  );
-  const prints = distinctArtworks(
-    printPage?.items.length
-      ? printPage.items
-      : launches.filter((product) => !product.isOriginal),
+  const launchCandidates = launchPage?.items ?? [];
+  const launches = distinctArtworks(launchCandidates);
+  const originalCandidates = originalPage?.items.length
+    ? originalPage.items
+    : launchCandidates.filter((product) => product.isOriginal);
+  const printCandidates = printPage?.items.length
+    ? printPage.items
+    : launchCandidates.filter((product) => !product.isOriginal);
+  const [originals, prints] = distributeDistinctArtworks(
+    originalCandidates,
+    printCandidates,
   );
 
   return (
