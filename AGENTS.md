@@ -4,8 +4,7 @@
 
 For every UI, JSX, CSS, layout, or visual review task in this repository, use the tracked
 `public/design-inspiration/maxwellillustration-design/SKILL.md` as the default design skill.
-Read its required `references/DESIGN.md` file and inspect the relevant screenshots before
-editing UI code. This repository copy is authoritative for this project and takes precedence
+Read its required `references/DESIGN.md` file and inspect the relevant screenshots before editing UI code. This repository copy is authoritative for this project and takes precedence
 over an installed or cached copy of the skill.
 
 <!-- BEGIN:nextjs-agent-rules -->
