@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
-import { type FormEvent, useEffect, useState } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { Grid } from "@/components/_ui/containers/container-simple";
 import { Button } from "@/components/_ui/primitives/button";
@@ -21,8 +20,6 @@ import type {
 import { cartHasAvailabilityIssues } from "@/lib/cart/availability";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { clearCartState, fetchCart } from "@/lib/redux/store/slices/cartSlice";
-import { OrderSummary } from "./order-summary-component";
-import { openRazorpayModal, RazorpayIntegration } from "./razorpay-integration";
 import { OrderSummary } from "./order-summary-component";
 import { openRazorpayModal, RazorpayIntegration } from "./razorpay-integration";
 
@@ -49,9 +46,6 @@ export default function CheckoutPage() {
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     null,
   );
-  const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
-    null,
-  );
   const [addressForm, setAddressForm] = useState(emptyAddress);
   const [preview, setPreview] = useState<CheckoutPreviewDto | null>(null);
   const [notes, setNotes] = useState("");
@@ -64,23 +58,13 @@ export default function CheckoutPage() {
   const hasVerifiedContact = Boolean(
     profile?.emailConfirmed || profile?.phoneNumberConfirmed,
   );
+  const hasAvailabilityIssues = cartHasAvailabilityIssues(cart);
 
   useEffect(() => {
     if (authStatus === "unauthenticated")
       router.push("/login?next=/store/shop/cart/checkout");
-    if (authStatus === "unauthenticated")
-      router.push("/login?next=/store/shop/cart/checkout");
     if (authStatus === "authenticated") {
       dispatch(fetchCart());
-      shippingAddressService
-        .list()
-        .then((items) => {
-          setAddresses(items);
-          const defaultAddress =
-            items.find((address) => address.isDefault) || items[0];
-          if (defaultAddress) setSelectedAddressId(defaultAddress.id);
-        })
-        .catch((err) => setError(err.message));
       shippingAddressService
         .list()
         .then((items) => {
@@ -229,17 +213,10 @@ export default function CheckoutPage() {
             <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
               1. Shipping Address
             </h2>
-            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
-              1. Shipping Address
-            </h2>
 
             {addresses.length > 0 && (
               <div className="space-y-3 mb-8">
                 {addresses.map((address) => (
-                  <label
-                    key={address.id}
-                    className="flex items-start gap-3 border border-[var(--border)] bg-[var(--paper)] p-4"
-                  >
                   <label
                     key={address.id}
                     className="flex items-start gap-3 border border-[var(--border)] bg-[var(--paper)] p-4"
@@ -255,8 +232,6 @@ export default function CheckoutPage() {
                       <br />
                       {address.addressLine1}, {address.city}, {address.state}{" "}
                       {address.postalCode}
-                      {address.addressLine1}, {address.city}, {address.state}{" "}
-                      {address.postalCode}
                       <br />
                       {address.phoneNumber}
                     </span>
@@ -266,50 +241,6 @@ export default function CheckoutPage() {
             )}
 
             <form onSubmit={handleCreateAddress} className="grid gap-4">
-              <input
-                className="p-3"
-                placeholder="Full name"
-                value={addressForm.fullName || ""}
-                onChange={(e) =>
-                  setAddressForm({ ...addressForm, fullName: e.target.value })
-                }
-                required
-              />
-              <input
-                className="p-3"
-                placeholder="Phone number"
-                value={addressForm.phoneNumber || ""}
-                onChange={(e) =>
-                  setAddressForm({
-                    ...addressForm,
-                    phoneNumber: e.target.value,
-                  })
-                }
-                required
-              />
-              <input
-                className="p-3"
-                placeholder="Address line 1"
-                value={addressForm.addressLine1 || ""}
-                onChange={(e) =>
-                  setAddressForm({
-                    ...addressForm,
-                    addressLine1: e.target.value,
-                  })
-                }
-                required
-              />
-              <input
-                className="p-3"
-                placeholder="Address line 2"
-                value={addressForm.addressLine2 || ""}
-                onChange={(e) =>
-                  setAddressForm({
-                    ...addressForm,
-                    addressLine2: e.target.value,
-                  })
-                }
-              />
               <input
                 className="p-3"
                 placeholder="Full name"
@@ -397,53 +328,7 @@ export default function CheckoutPage() {
                   }
                   required
                 />
-                <input
-                  className="p-3"
-                  placeholder="City"
-                  value={addressForm.city || ""}
-                  onChange={(e) =>
-                    setAddressForm({ ...addressForm, city: e.target.value })
-                  }
-                  required
-                />
-                <input
-                  className="p-3"
-                  placeholder="State"
-                  value={addressForm.state || ""}
-                  onChange={(e) =>
-                    setAddressForm({ ...addressForm, state: e.target.value })
-                  }
-                  required
-                />
-                <input
-                  className="p-3"
-                  placeholder="Postal code"
-                  value={addressForm.postalCode || ""}
-                  onChange={(e) =>
-                    setAddressForm({
-                      ...addressForm,
-                      postalCode: e.target.value,
-                    })
-                  }
-                  required
-                />
-                <input
-                  className="p-3"
-                  placeholder="Country code"
-                  value={addressForm.countryCode || ""}
-                  onChange={(e) =>
-                    setAddressForm({
-                      ...addressForm,
-                      countryCode: e.target.value,
-                    })
-                  }
-                  required
-                />
               </div>
-              <button
-                type="submit"
-                className="rounded-full border border-[var(--ink)] px-5 py-3 font-semibold transition hover:bg-[var(--ink)] hover:text-[var(--paper)]"
-              >
               <button
                 type="submit"
                 className="rounded-full border border-[var(--ink)] px-5 py-3 font-semibold transition hover:bg-[var(--ink)] hover:text-[var(--paper)]"
@@ -454,9 +339,6 @@ export default function CheckoutPage() {
           </section>
 
           <section className="store-surface p-6">
-            <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
-              2. Payment
-            </h2>
             <h2 className="font-display text-3xl font-bold mb-6 text-[var(--ink)]">
               2. Payment
             </h2>
@@ -498,7 +380,6 @@ export default function CheckoutPage() {
               </p>
             )}
             <button
-              type="button"
               type="button"
               onClick={handlePayment}
               disabled={
