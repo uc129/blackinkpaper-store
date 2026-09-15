@@ -19,9 +19,12 @@ import type {
   RegisterRequest,
   RegisterResponse,
   ShippingAddressDto,
+  StartPhoneAuthRequest,
+  StartPhoneAuthResponse,
   UpdateCartItemQuantityRequest,
   UpdateShippingAddressRequest,
   UserProfileDto,
+  VerifyPhoneAuthRequest,
   VerifyRazorpayPaymentRequest,
 } from "./types";
 
@@ -56,6 +59,23 @@ export const authService = {
     apiClient.get<UserProfileDto>("/api/Accounts/profile", { auth: true }),
   refresh: (refreshToken: string) =>
     apiClient.post<AuthResponse>("/api/Accounts/refresh", { refreshToken }),
+  startPhoneAuth: (payload: StartPhoneAuthRequest) =>
+    apiClient.post<StartPhoneAuthResponse>(
+      "/api/accounts/phone/start",
+      payload,
+    ),
+  verifyPhoneAuth: (payload: VerifyPhoneAuthRequest) =>
+    apiClient.post<AuthResponse>("/api/accounts/phone/verify", payload),
+  startPhoneLink: (payload: StartPhoneAuthRequest) =>
+    apiClient.post<StartPhoneAuthResponse>(
+      "/api/accounts/phone/link/start",
+      payload,
+      {
+        auth: true,
+      },
+    ),
+  linkPhone: (payload: VerifyPhoneAuthRequest) =>
+    apiClient.post<string>("/api/accounts/phone/link", payload, { auth: true }),
 };
 
 export const cartService = {

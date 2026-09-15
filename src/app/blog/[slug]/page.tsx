@@ -1,63 +1,67 @@
+import { notFound } from "next/navigation";
 import { ArticleBody } from "@/components/blog/ArticleBody";
 import { ArticleHeader } from "@/components/blog/ArticleCard/ArticleHeader";
 import { AuthorBadge } from "@/components/blog/ArticleCard/AuthorBadge";
 import { CategoryPill } from "@/components/blog/ArticleCard/CategoryPill";
 import { blogService } from "@/services/blogService";
-import { notFound } from "next/navigation";
 
+type ArticlePageProps = {
+  params: Promise<{ slug: string }>;
+};
 
-export async function generateMetadata({ params }: { params: { slug: string } }) {
-    const article = await blogService.getBySlug(params.slug);
+export async function generateMetadata({ params }: ArticlePageProps) {
+  const { slug } = await params;
+  const article = await blogService.getBySlug(slug);
 
-    if (!article) return {};
+  if (!article) return {};
 
-    const url = `https://yourdomain.com/blog/${article.slug}`;
+  const url = `https://yourdomain.com/blog/${article.slug}`;
 
-    return {
-        title: article.title,
-        description: article.excerpt,
+  return {
+    title: article.title,
+    description: article.excerpt,
 
-        openGraph: {
-            title: article.title,
-            description: article.excerpt,
-            url,
-            type: "article",
-            images: [article.coverImage],
-        },
+    openGraph: {
+      title: article.title,
+      description: article.excerpt,
+      url,
+      type: "article",
+      images: [article.coverImage],
+    },
 
-        twitter: {
-            card: "summary_large_image",
-            title: article.title,
-            description: article.excerpt,
-            images: [article.coverImage],
-        },
-    };
+    twitter: {
+      card: "summary_large_image",
+      title: article.title,
+      description: article.excerpt,
+      images: [article.coverImage],
+    },
+  };
 }
 
+export default async function ArticlePage({ params }: ArticlePageProps) {
+  const { slug } = await params;
+  const article = await blogService.getBySlug(slug);
 
-export default async function ArticlePage({ params }: { params: { slug: string } }) {
-    const article = await blogService.getBySlug(params.slug);
+  if (!article) return notFound();
 
-    if (!article) return notFound();
+  return (
+    <div className="max-w-3xl mx-auto px-4 py-12">
+      <ArticleHeader article={article} author={article.author} />
 
-    return (
-        <div className="max-w-3xl mx-auto px-4 py-12">
-            <ArticleHeader article={article} author={article.author} />
-
-            <div className="flex items-center gap-4 mt-6">
-                <AuthorBadge author={article.author} />
-                <div className="flex gap-2">
-                    {article.categories.map((c) => (
-                        <CategoryPill key={c.id} category={c.name} />
-                    ))}
-                </div>
-            </div>
-
-            <ArticleBody document={article.excerpt!} />
-
-            <div className="mt-16 border-t pt-10">
-                <AuthorBadge author={article.author} />
-            </div>
+      <div className="flex items-center gap-4 mt-6">
+        <AuthorBadge author={article.author} />
+        <div className="flex gap-2">
+          {article.categories.map((c) => (
+            <CategoryPill key={c.id} category={c.name} />
+          ))}
         </div>
-    );
+      </div>
+
+      <ArticleBody document={article.excerpt ?? ""} />
+
+      <div className="mt-16 border-t pt-10">
+        <AuthorBadge author={article.author} />
+      </div>
+    </div>
+  );
 }

@@ -1,9 +1,13 @@
 "use client";
 
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { type FormEvent, useEffect, useState } from "react";
 import Page from "@/components/_ui/containers/base/page";
 import { Grid } from "@/components/_ui/containers/container-simple";
+import { Button } from "@/components/_ui/primitives/button";
+import { isPaymentCaptured } from "@/features/checkout/payment-status";
+import { ApiError } from "@/lib/api/client";
 import {
   checkoutService,
   shippingAddressService,
@@ -36,6 +40,7 @@ export default function CheckoutPage() {
   const router = useRouter();
   const dispatch = useAppDispatch();
   const authStatus = useAppSelector((state) => state.auth.status);
+  const profile = useAppSelector((state) => state.auth.profile);
   const cart = useAppSelector((state) => state.cart.cart);
   const [addresses, setAddresses] = useState<ShippingAddressDto[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
@@ -46,6 +51,13 @@ export default function CheckoutPage() {
   const [notes, setNotes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isRazorpayReady, setIsRazorpayReady] = useState(false);
+  const [needsContactVerification, setNeedsContactVerification] =
+    useState(false);
+  const [pendingOrderId, setPendingOrderId] = useState<number | null>(null);
+  const hasVerifiedContact = Boolean(
+    profile?.emailConfirmed || profile?.phoneNumberConfirmed,
+  );
   const hasAvailabilityIssues = cartHasAvailabilityIssues(cart);
 
   useEffect(() => {
@@ -92,10 +104,18 @@ export default function CheckoutPage() {
   const handleCreateAddress = async (event: FormEvent) => {
     event.preventDefault();
     setError(null);
-    const created = await shippingAddressService.create(addressForm);
-    setAddresses((prev) => [...prev, created]);
-    setSelectedAddressId(created.id);
-    setAddressForm(emptyAddress);
+    try {
+      const created = await shippingAddressService.create(addressForm);
+      setAddresses((prev) => [...prev, created]);
+      setSelectedAddressId(created.id);
+      setAddressForm(emptyAddress);
+    } catch (addressError) {
+      setError(
+        addressError instanceof Error
+          ? addressError.message
+          : "Could not save address",
+      );
+    }
   };
 
   const handlePayment = async () => {
@@ -109,33 +129,77 @@ export default function CheckoutPage() {
       setError("Please select or create a shipping address.");
       return;
     }
+    if (!hasVerifiedContact) {
+      setNeedsContactVerification(true);
+      setError(
+        "Verify an email address or phone number before starting payment.",
+      );
+      return;
+    }
+    if (!isRazorpayReady) {
+      setError("Razorpay Checkout is still loading. Please try again.");
+      return;
+    }
 
     setIsLoading(true);
     setError(null);
+    setNeedsContactVerification(false);
     try {
       const session = await checkoutService.createPaymentSession({
         shippingAddressId: selectedAddressId,
         notes,
       });
-      openRazorpayModal(session, async (response) => {
-        try {
-          const order = await checkoutService.verifyPayment({
-            orderId: session.orderId,
-            razorpayPaymentId: response.razorpay_payment_id,
-            razorpayOrderId: response.razorpay_order_id,
-            razorpaySignature: response.razorpay_signature,
-          });
-          dispatch(clearCartState());
-          dispatch(fetchCart());
-          router.push(`/account/orders/${order.id}`);
-        } catch (err) {
+      setPendingOrderId(session.orderId);
+      openRazorpayModal(session, {
+        onSuccess: async (response) => {
+          setIsLoading(true);
+          try {
+            const order = await checkoutService.verifyPayment({
+              orderId: session.orderId,
+              razorpayPaymentId: response.razorpay_payment_id,
+              razorpayOrderId: response.razorpay_order_id,
+              razorpaySignature: response.razorpay_signature,
+            });
+            if (isPaymentCaptured(order)) {
+              dispatch(clearCartState());
+              await dispatch(fetchCart());
+            }
+            router.push(`/account/orders/${order.id}`);
+          } catch (verificationError) {
+            setError(
+              verificationError instanceof Error
+                ? verificationError.message
+                : "Payment verification failed",
+            );
+          } finally {
+            setIsLoading(false);
+          }
+        },
+        onDismiss: () => {
           setError(
-            err instanceof Error ? err.message : "Payment verification failed",
+            "Payment window closed. The order remains pending until payment is confirmed.",
           );
-        }
+        },
+        onFailure: (message) => {
+          setError(message);
+        },
       });
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Checkout failed");
+    } catch (checkoutError) {
+      if (
+        checkoutError instanceof ApiError &&
+        checkoutError.errorCode === "contact_not_verified"
+      ) {
+        setNeedsContactVerification(true);
+        setError(
+          "Verify an email address or phone number before starting payment.",
+        );
+      } else {
+        setError(
+          checkoutError instanceof Error
+            ? checkoutError.message
+            : "Checkout failed",
+        );
+      }
     } finally {
       setIsLoading(false);
     }
@@ -284,16 +348,50 @@ export default function CheckoutPage() {
               value={notes}
               onChange={(event) => setNotes(event.target.value)}
             />
+            {(needsContactVerification || !hasVerifiedContact) && (
+              <div className="mb-4 border border-[var(--border)] bg-[var(--paper-deep)] p-4">
+                <p className="mb-3 text-sm text-[var(--ink)]">
+                  Verify a phone number before paying. Phone verification also
+                  enables order updates.
+                </p>
+                <Button
+                  href="/account#phone-verification"
+                  variant="outline"
+                  size="sm"
+                >
+                  Verify phone number
+                </Button>
+              </div>
+            )}
             {error && (
-              <p className="text-sm text-[var(--danger)] mb-4">{error}</p>
+              <p className="mb-4 text-sm text-[var(--danger)]" role="alert">
+                {error}
+              </p>
+            )}
+            {pendingOrderId && (
+              <p className="mb-4 text-sm text-[var(--ink-soft)]">
+                Payment interrupted?{" "}
+                <Link
+                  className="store-link"
+                  href={`/account/orders/${pendingOrderId}`}
+                >
+                  View the pending order
+                </Link>
+              </p>
             )}
             <button
               type="button"
               onClick={handlePayment}
-              disabled={!preview || isLoading || hasAvailabilityIssues}
+              disabled={
+                !preview || isLoading || !isRazorpayReady || !hasVerifiedContact
+              }
               className="w-full rounded-full bg-[var(--ink)] text-[var(--paper)] py-4 font-bold hover:bg-[var(--ink-soft)] disabled:bg-[var(--muted)]"
             >
-              {isLoading ? "Starting payment..." : "Pay with Razorpay"}
+              {isLoading
+                ? "Starting payment..."
+                : isRazorpayReady
+                  ? "Pay with Razorpay"
+                  : "Loading Razorpay..."}
             </button>
           </section>
         </div>
@@ -302,7 +400,14 @@ export default function CheckoutPage() {
           <OrderSummary preview={preview} />
         </div>
       </Grid>
-      <RazorpayIntegration />
+      <RazorpayIntegration
+        onReady={() => setIsRazorpayReady(true)}
+        onError={() =>
+          setError(
+            "Razorpay Checkout could not be loaded. Please try again later.",
+          )
+        }
+      />
     </Page>
   );
 }

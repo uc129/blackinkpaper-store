@@ -180,13 +180,29 @@ export type AuthResponse = {
   expiresIn: number;
 };
 
+export type StartPhoneAuthRequest = {
+  phoneNumber: string;
+};
+
+export type StartPhoneAuthResponse = {
+  channel?: string | null;
+  expiresInSeconds: number;
+};
+
+export type VerifyPhoneAuthRequest = StartPhoneAuthRequest & {
+  code: string;
+  fullName?: string | null;
+};
+
 export type UserProfileDto = {
   id?: string | null;
   email?: string | null;
+  phoneNumber?: string | null;
   fullName?: string | null;
   artistPortfolioUrl?: string | null;
   roles: string[];
   emailConfirmed: boolean;
+  phoneNumberConfirmed: boolean;
 };
 
 export type CartSelectedVariantDto = {

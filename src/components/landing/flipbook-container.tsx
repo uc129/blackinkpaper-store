@@ -13,7 +13,7 @@ const artViewerArtworks: Artwork[] = products.filter(prod => prod.media.coverIma
     title: prod.name || "Artwork",
     description: "",
     src: prod.media.coverImageUrl || prod.media.headerImageUrl || "",
-    artist: "Utkarsh Chaudhary",
+    artist: "Ria Mukharjee",
     year: "2023",
     medium: "Digital Print",
     slug: prod.slug || ""

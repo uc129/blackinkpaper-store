@@ -1,4 +1,8 @@
-import { createAsyncThunk, createSlice, PayloadAction } from "@reduxjs/toolkit";
+import {
+  createAsyncThunk,
+  createSlice,
+  type PayloadAction,
+} from "@reduxjs/toolkit";
 import {
   clearAuthTokens,
   getStoredAccessToken,
@@ -6,7 +10,13 @@ import {
   storeAuthTokens,
 } from "@/lib/api/client";
 import { authService } from "@/lib/api/storefront/services";
-import type { AuthResponse, LoginRequest, RegisterRequest, UserProfileDto } from "@/lib/api/storefront/types";
+import type {
+  AuthResponse,
+  LoginRequest,
+  RegisterRequest,
+  UserProfileDto,
+  VerifyPhoneAuthRequest,
+} from "@/lib/api/storefront/types";
 
 type AuthState = {
   accessToken: string | null;
@@ -35,25 +45,45 @@ function applyAuthResponse(response: AuthResponse) {
   };
 }
 
-export const login = createAsyncThunk("auth/login", async (payload: LoginRequest) => {
-  const response = await authService.login(payload);
-  const tokens = applyAuthResponse(response);
-  const profile = await authService.profile();
-  return { ...tokens, profile };
-});
+export const login = createAsyncThunk(
+  "auth/login",
+  async (payload: LoginRequest) => {
+    const response = await authService.login(payload);
+    const tokens = applyAuthResponse(response);
+    const profile = await authService.profile();
+    return { ...tokens, profile };
+  },
+);
 
-export const register = createAsyncThunk("auth/register", async (payload: RegisterRequest) => {
-  await authService.register(payload);
-  const response = await authService.login({ email: payload.email, password: payload.password });
-  const tokens = applyAuthResponse(response);
-  const profile = await authService.profile();
-  return { ...tokens, profile };
-});
+export const loginWithPhone = createAsyncThunk(
+  "auth/loginWithPhone",
+  async (payload: VerifyPhoneAuthRequest) => {
+    const response = await authService.verifyPhoneAuth(payload);
+    const tokens = applyAuthResponse(response);
+    const profile = await authService.profile();
+    return { ...tokens, profile };
+  },
+);
+
+export const register = createAsyncThunk(
+  "auth/register",
+  async (payload: RegisterRequest) => {
+    await authService.register(payload);
+    const response = await authService.login({
+      email: payload.email,
+      password: payload.password,
+    });
+    const tokens = applyAuthResponse(response);
+    const profile = await authService.profile();
+    return { ...tokens, profile };
+  },
+);
 
 export const hydrateAuth = createAsyncThunk("auth/hydrate", async () => {
   const accessToken = getStoredAccessToken();
   const refreshToken = getStoredRefreshToken();
-  if (!accessToken) return { accessToken: null, refreshToken: null, profile: null };
+  if (!accessToken)
+    return { accessToken: null, refreshToken: null, profile: null };
 
   try {
     const profile = await authService.profile();
@@ -87,6 +117,9 @@ const authSlice = createSlice({
     setProfile(state, action: PayloadAction<UserProfileDto>) {
       state.profile = action.payload;
     },
+    clearAuthError(state) {
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -103,6 +136,20 @@ const authSlice = createSlice({
       .addCase(login.rejected, (state, action) => {
         state.status = "unauthenticated";
         state.error = action.error.message || "Login failed";
+      })
+      .addCase(loginWithPhone.pending, (state) => {
+        state.status = "loading";
+        state.error = null;
+      })
+      .addCase(loginWithPhone.fulfilled, (state, action) => {
+        state.status = "authenticated";
+        state.accessToken = action.payload.accessToken;
+        state.refreshToken = action.payload.refreshToken;
+        state.profile = action.payload.profile;
+      })
+      .addCase(loginWithPhone.rejected, (state, action) => {
+        state.status = "unauthenticated";
+        state.error = action.error.message || "Phone verification failed";
       })
       .addCase(register.pending, (state) => {
         state.status = "loading";
@@ -125,7 +172,9 @@ const authSlice = createSlice({
         state.accessToken = action.payload.accessToken;
         state.refreshToken = action.payload.refreshToken;
         state.profile = action.payload.profile;
-        state.status = action.payload.accessToken ? "authenticated" : "unauthenticated";
+        state.status = action.payload.accessToken
+          ? "authenticated"
+          : "unauthenticated";
       })
       .addCase(hydrateAuth.rejected, (state) => {
         state.accessToken = null;
@@ -144,5 +193,5 @@ const authSlice = createSlice({
   },
 });
 
-export const { clearAuthState, setProfile } = authSlice.actions;
+export const { clearAuthError, clearAuthState, setProfile } = authSlice.actions;
 export default authSlice.reducer;

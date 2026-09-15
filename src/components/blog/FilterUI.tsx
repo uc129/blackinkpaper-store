@@ -44,7 +44,7 @@ export function FiltersUI({ current }: { current: any }) {
             >
                 <option value="">All Authors</option>
                 <option value="john">John Doe</option>
-                <option value="utkarsh">Utkarsh</option>
+                <option value="ria">Ria</option>
                 <option value="guest">Guest Authors</option>
             </select>
         </div>
