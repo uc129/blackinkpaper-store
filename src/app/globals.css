@@ -1571,13 +1571,13 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 
 /* Editorial product detail */
 .storefront-product-page {
-  --product-ink: #f3f0eb;
-  --product-muted: #aba5a1;
-  --product-line: #6b6662;
-  --product-panel: #352f2f;
+  --product-ink: var(--ink);
+  --product-muted: var(--ink-soft);
+  --product-line: var(--border);
+  --product-panel: var(--ink);
   max-width: none;
   padding: 0;
-  background: #050505;
+  background: var(--paper);
   color: var(--product-ink);
 }
 
@@ -1890,9 +1890,9 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 }
 
 .product-purchase__variant[aria-pressed="true"] {
-  border-color: #f5f3f0;
-  background: #f5f3f0;
-  color: var(--ink);
+  border-color: var(--product-ink);
+  background: var(--product-ink);
+  color: var(--paper);
 }
 
 .product-purchase__variant:disabled {
@@ -1916,7 +1916,7 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 }
 
 .product-purchase__variant[aria-pressed="true"] small {
-  color: #77706c;
+  color: var(--paper-deep);
 }
 
 .product-purchase__variant > span:last-of-type {
@@ -1961,7 +1961,7 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 }
 
 .product-purchase__quantity button:hover:not(:disabled) {
-  background: rgba(255, 255, 255, 0.1);
+  background: var(--paper-deep);
 }
 
 .product-purchase__quantity button:disabled {
@@ -1979,7 +1979,7 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
   margin: 18px 0 0;
   padding-left: 12px;
   border-left: 2px solid var(--danger);
-  color: #e49b8c;
+  color: var(--danger);
   font-size: 12px;
 }
 
@@ -1988,9 +1988,10 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
   min-height: 64px;
   margin-top: 28px;
   padding: 15px 28px;
+  border: 1px solid var(--product-panel);
   border-radius: 999px;
   background: var(--product-panel);
-  color: var(--product-ink);
+  color: var(--paper);
   font-family: var(--font-young-serif), Georgia, serif;
   font-size: 16px;
   transition:
@@ -2002,7 +2003,7 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 .product-purchase__cta:hover:not(:disabled),
 .product-purchase__cta:focus-visible,
 .product-purchase__cta.is-added {
-  background: var(--product-ink);
+  background: var(--paper);
   color: var(--ink);
 }
 
@@ -2083,7 +2084,7 @@ body:has(.storefront-originals-page) nav[aria-label="Breadcrumb"] {
 
 .product-detail-related {
   padding-bottom: 112px;
-  border-top: 1px solid #171717;
+  border-top: 1px solid var(--product-line);
 }
 
 .product-detail-related .editorial-product-rail {
