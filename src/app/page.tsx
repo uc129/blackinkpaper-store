@@ -1,17 +1,19 @@
+import Link from "next/link";
 import Page from "@/components/_ui/containers/base/page";
-import Section from "@/components/_ui/containers/base/section";
 import { StoreServerError } from "@/components/ecommerce/StoreServerError";
-import AboutSection from "@/components/landing/about-section";
-import { FeaturedProductShowcase } from "@/components/landing/featured-product-showcase";
-import { LandingFlipbookContainer } from "@/components/landing/flipbook-container";
 import Hero from "@/components/landing/hero";
+import { EditorialArtworkGrid } from "@/features/storefront/editorial/EditorialArtworkGrid";
+import { EditorialProductRail } from "@/features/storefront/editorial/EditorialProductRail";
+import { EditorialSectionHeader } from "@/features/storefront/editorial/EditorialSectionHeader";
+import { HomeArtistStory } from "@/features/storefront/home/HomeArtistStory";
+import { HomeCloseups } from "@/features/storefront/home/HomeCloseups";
 import { storefrontProductService } from "@/lib/api/storefront/services";
-import {
-  distinctArtworks,
-  distributeDistinctArtworks,
-} from "@/lib/storefront/products";
+import { distinctArtworks } from "@/lib/storefront/products";
+import { formatPriceToIntl } from "@/lib/utils";
 
 export const dynamic = "force-dynamic";
+
+const HOMEPAGE_ORIGINALS_LIMIT = 4;
 
 export default async function Home() {
   const [launchPage, originalPage, printPage] = await Promise.all([
@@ -26,9 +28,8 @@ export default async function Home() {
       .getProducts({
         CategorySlug: "originals",
         IsAvailable: true,
-        IsFeatured: true,
         Page: 1,
-        PageSize: 5,
+        PageSize: HOMEPAGE_ORIGINALS_LIMIT,
       })
       .catch(() => null),
     storefrontProductService
@@ -49,38 +50,58 @@ export default async function Home() {
   const printCandidates = printPage?.items.length
     ? printPage.items
     : launchCandidates.filter((product) => !product.isOriginal);
-  const [originals, prints] = distributeDistinctArtworks(
-    originalCandidates,
-    printCandidates,
+  const originals = distinctArtworks(originalCandidates);
+  const prints = distinctArtworks(printCandidates, originals);
+  const homepageOriginals = originals.slice(0, HOMEPAGE_ORIGINALS_LIMIT);
+  const startingPrint = prints.reduce(
+    (lowest, product) =>
+      product.pricing.finalPrice < lowest.pricing.finalPrice ? product : lowest,
+    prints[0],
   );
+  const printRailTitle = startingPrint
+    ? `From ${formatPriceToIntl(
+        startingPrint.pricing.finalPrice,
+        startingPrint.pricing.currencyCode || "INR",
+      )}, signed`
+    : "Signed fine art prints";
 
   return (
-    <Page className="home landing">
+    <Page className="storefront-editorial-page home-editorial">
       <Hero />
-      <Section className="mx-auto py-16 lg:py-24">
+      <section className="home-editorial__originals">
+        <EditorialSectionHeader
+          title="Available originals"
+          meta={`${homepageOriginals.length} works · studio, New Delhi`}
+        />
         {originalPage || launchPage ? (
-          <FeaturedProductShowcase products={originals} kind="original" />
+          <EditorialArtworkGrid products={homepageOriginals} />
         ) : (
           <StoreServerError />
         )}
-      </Section>
-      <Section className="mx-auto py-16 lg:py-24">
-        {printPage || launchPage ? (
-          <FeaturedProductShowcase products={prints} kind="print" />
-        ) : (
-          <StoreServerError />
-        )}
-      </Section>
-      <Section className="mx-auto py-16 text-center lg:py-24">
-        {launchPage ? (
-          <LandingFlipbookContainer products={launches} />
-        ) : (
-          <StoreServerError />
-        )}
-      </Section>
-      <Section className="mx-auto text-center">
-        <AboutSection />
-      </Section>
+        <div className="home-editorial__catalogue-link">
+          <Link
+            href="/store/shop/category/originals"
+            className="editorial-pill editorial-pill--outline"
+          >
+            View the full catalogue
+          </Link>
+        </div>
+      </section>
+
+      {printPage || launchPage ? (
+        <EditorialProductRail
+          products={prints.slice(0, 6)}
+          eyebrow="Prints and editions"
+          title={printRailTitle}
+          linkLabel="All prints"
+          linkHref="/store/shop/category/prints"
+        />
+      ) : (
+        <StoreServerError />
+      )}
+
+      <HomeArtistStory />
+      <HomeCloseups products={[...homepageOriginals, ...launches]} />
     </Page>
   );
 }

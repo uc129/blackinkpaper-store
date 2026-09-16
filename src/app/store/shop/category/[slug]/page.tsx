@@ -1,4 +1,3 @@
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import Page from "@/components/_ui/containers/base/page";
 import Section from "@/components/_ui/containers/base/section";
@@ -6,11 +5,10 @@ import { ContainerSimple } from "@/components/_ui/containers/container-simple";
 import { Heading } from "@/components/_ui/primitives/heading";
 import { ProductGrid } from "@/components/ecommerce/ProductGrid";
 import { StoreServerError } from "@/components/ecommerce/StoreServerError";
-import { OriginalProductList } from "@/components/ecommerce/store/OriginalProductList";
-import { OriginalsAssurance } from "@/components/ecommerce/store/OriginalsAssurance";
 import { RecommendationList } from "@/components/ecommerce/store/RecommendationList";
 import { StoreCategoryMenu } from "@/components/ecommerce/store/StoreCategoryMenu";
 import { StorePagination } from "@/components/ecommerce/store/StorePagination";
+import { OriginalsCollectionView } from "@/features/storefront/originals/OriginalsCollectionView";
 import {
   findCategoryBySlug,
   findSubcategoryBySlug,
@@ -93,49 +91,49 @@ export default async function CategoryDetailPage({
     limit: isOriginals ? 3 : 4,
   });
 
+  if (isOriginals) {
+    return (
+      <Page className="storefront-editorial-page storefront-originals-page">
+        <OriginalsCollectionView
+          catalog={catalog}
+          products={productPage.items}
+          suggestions={suggestions}
+          totalCount={productPage.totalCount}
+          currentPage={requestedPage}
+          pageCount={pageCount}
+          pathname={pathname}
+          searchParams={query}
+        />
+      </Page>
+    );
+  }
+
   return (
     <Page>
       <Section className="mx-auto">
         <ContainerSimple className="gap-12 lg:gap-16">
-          <div className={isOriginals ? "max-w-3xl" : "text-center"}>
+          <div className="text-center">
             <Heading
-              size={isOriginals ? "h1" : "title"}
+              size="title"
               className="font-display font-bold text-[var(--ink)]"
             >
               {getCatalogLabel(category)}
             </Heading>
             {category.description && (
-              <p
-                className={`mt-5 max-w-2xl text-lg leading-relaxed text-[var(--ink-soft)] ${
-                  isOriginals ? "" : "mx-auto"
-                }`}
-              >
+              <p className="mx-auto mt-5 max-w-2xl text-lg leading-relaxed text-[var(--ink-soft)]">
                 {category.description}
               </p>
             )}
-            {isOriginals && (
-              <Link
-                href="/contact"
-                className="mt-6 inline-flex min-h-11 items-center rounded-full bg-[var(--ink)] px-5 text-sm font-medium text-[var(--paper)] transition hover:bg-[var(--ink-soft)]"
-              >
-                Commission a work
-              </Link>
-            )}
           </div>
 
-          {isOriginals && <OriginalsAssurance />}
           <StoreCategoryMenu catalog={catalog} activeCategorySlug={slug} />
 
           <div id="products" className="scroll-mt-28">
             {productPage.items.length > 0 ? (
-              isOriginals ? (
-                <OriginalProductList products={productPage.items} />
-              ) : (
-                <div className="store-catalog-layout gap-10">
-                  <ProductGrid products={productPage.items} hover />
-                  <RecommendationList products={suggestions} />
-                </div>
-              )
+              <div className="store-catalog-layout gap-10">
+                <ProductGrid products={productPage.items} hover />
+                <RecommendationList products={suggestions} />
+              </div>
             ) : (
               <p className="py-12 text-center text-[var(--ink-soft)]">
                 No artworks are available in this collection right now.
@@ -149,13 +147,6 @@ export default async function CategoryDetailPage({
             pathname={pathname}
             searchParams={query}
           />
-
-          {isOriginals && (
-            <RecommendationList
-              products={suggestions}
-              title="Suggested Originals"
-            />
-          )}
         </ContainerSimple>
       </Section>
     </Page>

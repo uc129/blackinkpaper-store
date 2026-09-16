@@ -1,6 +1,5 @@
 "use client";
 
-import { Expand } from "lucide-react";
 import { useState } from "react";
 import { ImageWithFallback } from "@/components/_ui/images/imagewithfallback";
 import ProductLightbox from "./ProductLightbox";
@@ -17,14 +16,16 @@ export type GalleryImage = {
 
 type Props = {
   images: GalleryImage[];
+  accessionCode?: string | null;
   className?: string;
   imageFit?: "cover" | "contain";
 };
 
 export default function ProductDetailGallery({
   images,
+  accessionCode,
   className,
-  imageFit = "cover",
+  imageFit = "contain",
 }: Props) {
   const [active, setActive] = useState(0);
   const [isLightboxOpen, setIsLightboxOpen] = useState(false);
@@ -41,51 +42,50 @@ export default function ProductDetailGallery({
   }
 
   return (
-    <div className={`grid gap-4 ${className ?? ""}`}>
-      {/* Thumbnails */}
-      <div className="col-12 2xl:col-2 flex justify-center lg:justify-start 2xl:flex-col gap-3">
-        {images.map((img, i) => (
-          <button
-            key={`${img.src}-${img.thumb ?? "thumbnail"}`}
-            type="button"
-            onClick={() => setActive(i)}
-            className={`relative w-fit overflow-hidden border transition
-                            ${active === i ? "border-[var(--ink)]" : "border-transparent hover:border-[var(--border)]"}`}
-            aria-label={`View product image ${i + 1}`}
-            aria-current={active === i ? "true" : undefined}
-          >
-            <ImageWithFallback
-              src={img.thumb ?? img.src}
-              alt=""
-              width={100}
-              height={100}
-              loading={i === 0 ? "eager" : "lazy"}
-              className="h-24 w-24 object-cover"
-            />
-          </button>
-        ))}
-      </div>
-
-      {/* Main artwork */}
+    <div className={`product-gallery ${className ?? ""}`}>
       <button
         type="button"
-        className="group min-w-0 w-full h-[50vh] lg:h-[72vh] col-12 2xl:col-9 relative overflow-clip bg-[var(--paper-deep)] focus:outline-none focus:ring-2 focus:ring-[var(--ink)] focus:ring-offset-4 focus:ring-offset-[var(--primary)]"
+        className="product-gallery__stage"
         onClick={() => setIsLightboxOpen(true)}
         aria-label="Open product image viewer"
       >
+        {accessionCode && (
+          <span className="product-gallery__accession">{accessionCode}</span>
+        )}
         <ImageWithFallback
           src={activeImage.src}
           alt={activeImage.alt ?? ""}
           fill
           loading="eager"
           fetchPriority="high"
-          className={`${imageFit === "contain" ? "object-contain" : "object-cover"} overflow-clip`}
-          sizes="(min-width: 1348px) 75vw, 100vw"
+          className={imageFit === "contain" ? "object-contain" : "object-cover"}
+          sizes="(min-width: 988px) 55vw, 100vw"
         />
-        <span className="absolute right-4 top-4 inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/60 bg-white/80 leading-none text-[var(--ink)] opacity-0 shadow-sm transition group-hover:opacity-100 group-focus-visible:opacity-100 [&>svg]:block">
-          <Expand size={18} aria-hidden="true" />
-        </span>
+        <span className="product-gallery__zoom">Click to zoom</span>
       </button>
+
+      <div className="product-gallery__thumbnails">
+        {images.map((img, i) => (
+          <button
+            key={`${img.src}-${img.thumb ?? "thumbnail"}`}
+            type="button"
+            onClick={() => setActive(i)}
+            className="product-gallery__thumbnail"
+            aria-label={`View product image ${i + 1}`}
+            aria-current={active === i ? "true" : undefined}
+          >
+            <ImageWithFallback
+              src={img.thumb ?? img.src}
+              alt=""
+              fill
+              sizes="96px"
+              loading={i === 0 ? "eager" : "lazy"}
+              className="object-cover"
+            />
+          </button>
+        ))}
+        <span className="product-gallery__sheet-label">Full sheet</span>
+      </div>
 
       <ProductLightbox
         images={images}
