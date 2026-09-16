@@ -59,6 +59,21 @@ describe("distinctArtworks", () => {
     ).toEqual([1, 3]);
   });
 
+  it("can give an earlier collection priority when removing artwork variants", () => {
+    const originals = [
+      product(1, "drawing-1", "original-1"),
+      product(2, "drawing-2", "original-2"),
+    ];
+    const prints = [
+      product(11, "drawing-1", "print-1"),
+      product(12, "drawing-3", "print-2"),
+    ];
+
+    expect(distinctArtworks(prints, originals).map(({ id }) => id)).toEqual([
+      12,
+    ]);
+  });
+
   it("distributes overlapping artwork between product groups", () => {
     const originals = [
       product(1, undefined, "original-1", "domed-monument"),

@@ -1,7 +1,6 @@
 "use client";
 import { Menu, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
-import { Button } from "@/components/_ui/primitives/button";
 import { NavLink } from "@/components/_ui/primitives/links";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import { logout } from "@/lib/redux/store/slices/authSlice";
@@ -20,12 +19,9 @@ const Navbar = () => {
 
   useEffect(() => {
     document.body.style.overflow = open ? "hidden" : "";
-    const nav = document.querySelector("nav");
-    nav?.classList.toggle("hidden", open);
 
     return () => {
       document.body.style.overflow = "";
-      nav?.classList.remove("hidden"); // Ensure nav is visible again when closing
     };
   }, [open]);
 
@@ -64,14 +60,14 @@ const Navbar = () => {
         <div className="layout-navbar flex items-center justify-between gap-4 lg:gap-8">
           <NavLink
             href="/"
-            text="BlackInkPaper Illustration"
+            text="BlackInkPaper"
             linkSize="xl"
             boldVariant="bold"
             className="max-w-[15rem] leading-tight sm:max-w-none font-display text-[var(--ink)]"
           />
 
           <div className="flex items-center gap-6">
-            <div className="hidden xl:flex items-center gap-5 2xl:gap-7">
+            <div className="main-nav-links items-center gap-5 2xl:gap-7">
               {primaryNavItems.map((item) => (
                 <NavLink
                   key={item.href}
@@ -103,14 +99,16 @@ const Navbar = () => {
             </div>
 
             <div className="flex items-center gap-3">
-              <Button
-                variant="icon"
-                className="xl:hidden"
+              <button
+                type="button"
+                className="main-nav-menu-trigger size-10 items-center justify-center rounded-full text-[var(--ink)] transition-colors hover:bg-[var(--paper-deep)]"
                 onClick={() => setOpen(true)}
                 aria-label="Open menu"
+                aria-controls="main-navbar-mobile"
+                aria-expanded={open}
               >
                 <Menu size={24} strokeWidth={1.8} />
-              </Button>
+              </button>
             </div>
           </div>
         </div>
@@ -125,19 +123,20 @@ const Navbar = () => {
             <div className="font-display text-xl font-bold leading-tight sm:text-2xl">
               BlackInkPaper
             </div>
-            <Button
-              variant="icon"
+            <button
+              type="button"
+              className="inline-flex size-10 items-center justify-center rounded-full text-[var(--ink)] transition-colors hover:bg-[var(--paper-deep)]"
               onClick={() => setOpen(false)}
               aria-label="Close menu"
             >
               <X size={24} strokeWidth={1.8} />
-            </Button>
+            </button>
           </div>
 
           <div className="layout-navbar pb-10 pt-6 sm:pt-10">
             <div
               ref={overlayRef}
-              className="flex flex-col gap-4 text-[clamp(3.15rem,11vw,4.25rem)] leading-[1.02] sm:gap-5"
+              className="mobile-nav-links flex flex-col gap-4 leading-[1.02] sm:gap-5"
             >
               {primaryNavItems.map((item) => (
                 <NavLink

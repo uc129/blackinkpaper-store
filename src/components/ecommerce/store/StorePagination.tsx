@@ -10,11 +10,13 @@ export function StorePagination({
   pageCount,
   pathname,
   searchParams,
+  variant = "default",
 }: {
   currentPage: number;
   pageCount: number;
   pathname: string;
   searchParams?: Record<string, string | string[] | undefined>;
+  variant?: "default" | "editorial";
 }) {
   if (pageCount <= 1) return null;
 
@@ -25,7 +27,9 @@ export function StorePagination({
   return (
     <nav
       aria-label="Product pages"
-      className="flex flex-wrap items-center justify-center gap-2"
+      className={`flex flex-wrap items-center justify-center gap-2 ${
+        variant === "editorial" ? "editorial-pagination" : ""
+      }`}
     >
       {currentPage > 1 && (
         <Link

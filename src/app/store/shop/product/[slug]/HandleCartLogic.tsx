@@ -1,12 +1,13 @@
 "use client";
 
+import { Minus, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
-import { ContainerSimple } from "@/components/_ui/containers/container-simple";
-import { QuantitySelector } from "@/components/ecommerce/QuantitySelector";
-import { ProductSpecifications } from "@/components/ecommerce/store/ProductSpecifications";
-import { ProductText } from "@/components/ecommerce/store/ProductText";
-import { VariantSelector } from "@/components/ecommerce/store/VariantSelector";
-import type { ProductResponseDto } from "@/lib/api/storefront/types";
+import type {
+  ArtSpecificationsDto,
+  ProductResponseDto,
+  ProductVariantDto,
+  ProductVariantOptionDto,
+} from "@/lib/api/storefront/types";
 import { useAppDispatch, useAppSelector } from "@/lib/hooks/redux-hooks";
 import {
   createDefaultSelections,
@@ -21,6 +22,7 @@ import {
   addGuestCartItem,
   addServerCartItem,
 } from "@/lib/redux/store/slices/cartSlice";
+import { formatPriceToIntl } from "@/lib/utils";
 
 function getErrorMessage(error: unknown) {
   if (error && typeof error === "object" && "message" in error) {
@@ -28,6 +30,84 @@ function getErrorMessage(error: unknown) {
     if (typeof message === "string" && message) return message;
   }
   return "This artwork could not be added to your cart. Please try again.";
+}
+
+function formatDimensions(artSpecs?: ArtSpecificationsDto | null) {
+  const dimensions = artSpecs?.physicalDimensions;
+  if (!dimensions) return artSpecs?.paperType || "Paper";
+  return `${dimensions.width} × ${dimensions.height}${dimensions.unit ? ` ${dimensions.unit}` : ""}`;
+}
+
+function getVariantDescription(
+  variant: ProductVariantDto,
+  option: ProductVariantOptionDto,
+  artSpecs?: ArtSpecificationsDto | null,
+) {
+  if (variant.fulfillmentType === 0) {
+    const format = artSpecs?.fileFormat || "Digital file";
+    const resolution = artSpecs?.resolutionDpi
+      ? ` · ${artSpecs.resolutionDpi} DPI`
+      : "";
+    return `${format}${resolution} · instant delivery`;
+  }
+
+  const medium = artSpecs?.paperType || "Fine art paper";
+  const size =
+    option.value && !variant.label?.includes(option.value)
+      ? ` · ${option.value}`
+      : "";
+  return `${medium}${size} · made to order`;
+}
+
+function ProductDetails({
+  product,
+  isOriginal,
+}: {
+  product: ProductResponseDto;
+  isOriginal: boolean;
+}) {
+  const catalogueId =
+    product.productId || product.artworkId || "Studio catalogue";
+
+  return (
+    <div className="product-purchase__accordions">
+      <details open>
+        <summary>
+          <span>Provenance &amp; documentation</span>
+          <span aria-hidden="true" />
+        </summary>
+        <p>
+          Catalogued as {catalogueId}.{" "}
+          {isOriginal
+            ? product.artSpecs?.hasCertificate
+              ? "A certificate of authenticity is included with the work."
+              : "The studio catalogue record accompanies the work."
+            : "Edition and production details are recorded with the order."}
+        </p>
+      </details>
+      <details>
+        <summary>
+          <span>Shipping &amp; packing</span>
+          <span aria-hidden="true" />
+        </summary>
+        <p>
+          {isOriginal
+            ? "The sheet is protected with archival materials and packed for tracked transit."
+            : "Physical prints are packed flat or rolled according to size. Digital editions are delivered electronically."}
+        </p>
+      </details>
+      <details>
+        <summary>
+          <span>Care</span>
+          <span aria-hidden="true" />
+        </summary>
+        <p>
+          Keep away from direct sunlight and moisture. Use archival framing
+          materials for physical works.
+        </p>
+      </details>
+    </div>
+  );
 }
 
 export default function HandleCartLogicComponent({
@@ -74,6 +154,12 @@ export default function HandleCartLogicComponent({
     product.pricing.basePrice === finalUnitPrice
       ? undefined
       : product.pricing.basePrice;
+  const currencyCode = product.pricing.currencyCode || "INR";
+  const selectedFulfillmentType = selections[0]?.variant.fulfillmentType;
+  const displayName =
+    (!isOriginal && product.content.printName) ||
+    product.name?.replace(/\s*\(print\)$/i, "") ||
+    "Untitled artwork";
 
   const updateVariant = (variantId: number, optionId: number) => {
     setSelectedOptionIds((current) =>
@@ -125,85 +211,143 @@ export default function HandleCartLogicComponent({
   };
 
   return (
-    <ContainerSimple className="gap-5">
-      <ProductText
-        large
-        title={product.name || "Untitled artwork"}
-        titleClassNames="font-display text-[var(--ink)] font-semibold leading-tight"
-        currentPrice={finalUnitPrice}
-        oldPrice={previousPrice}
-        displayPrice
-        currencyCode={product.pricing.currencyCode || "INR"}
-        description={
-          product.content.description || product.content.shortDescription || ""
-        }
-        notificationText={
-          isOriginal
-            ? "Original · 1 of 1"
-            : product.taxonomy.isFeatured
-              ? "Featured print"
-              : "Print"
-        }
-      />
+    <div className="product-purchase">
+      <p className="product-purchase__eyebrow">
+        {isOriginal
+          ? "Original drawing · studio work"
+          : "Fine art print · studio edition"}
+      </p>
+      <h1>{displayName}</h1>
 
-      <ProductSpecifications
-        artSpecs={product.artSpecs}
-        isOriginal={isOriginal}
-      />
+      <div className="product-purchase__price-row">
+        <div>
+          <span className="product-purchase__price">
+            {formatPriceToIntl(finalUnitPrice, currencyCode)}
+          </span>
+          {previousPrice !== undefined && previousPrice > finalUnitPrice && (
+            <del>{formatPriceToIntl(previousPrice, currencyCode)}</del>
+          )}
+        </div>
+        <span className="product-purchase__edition">
+          {isOriginal ? "Original · 1 of 1" : "Print · open edition"}
+        </span>
+      </div>
 
       {isOriginal ? (
-        <div className="store-surface flex items-center justify-between gap-4 p-4 text-sm">
-          <div>
-            <p className="font-display text-lg text-[var(--ink)]">
-              A unique, one-of-a-kind piece
-            </p>
-            <p className="mt-1 text-[var(--ink-soft)]">
-              Quantity is fixed at one.
-            </p>
-          </div>
-          <span className="shrink-0 rounded-full border border-[var(--ink)] px-4 py-2 font-medium text-[var(--ink)]">
-            1 of 1
-          </span>
-        </div>
-      ) : (
         <>
-          {variants.map((variant) => (
-            <VariantSelector
-              key={variant.id}
-              label={variant.label || "Option"}
-              options={(variant.options || []).map((option) => ({
-                id: option.id,
-                label: option.value || "Option",
-                disabled: !isVariantOptionAvailable(variant, option),
-              }))}
-              value={selectedOptionIds[variant.id]}
-              onChange={(optionId) => updateVariant(variant.id, optionId)}
-            />
-          ))}
-
-          <div className="w-fit">
-            <QuantitySelector
-              onChange={setProductQuantity}
-              value={productQuantity}
-              max={selectedStockLimit}
-              disabled={soldOut}
-              classNames="justify-between rounded-full border border-[var(--ink)] bg-transparent px-4 py-2"
-            />
+          <dl className="product-purchase__spec-grid">
+            <div>
+              <dt>Sheet</dt>
+              <dd>{formatDimensions(product.artSpecs)}</dd>
+            </div>
+            <div>
+              <dt>Framing</dt>
+              <dd>
+                {product.artSpecs?.framingStatus ||
+                  (product.artSpecs?.isFramed ? "Framed" : "Unframed")}
+              </dd>
+            </div>
+            <div>
+              <dt>Signed</dt>
+              <dd>
+                {product.artSpecs?.isSigned
+                  ? "Verso, by the artist"
+                  : "Unsigned"}
+              </dd>
+            </div>
+            <div>
+              <dt>Certificate</dt>
+              <dd>
+                {product.artSpecs?.hasCertificate ? "Included" : "Not included"}
+              </dd>
+            </div>
+          </dl>
+          <div className="product-purchase__notice">
+            <span aria-hidden="true" />
+            <p>One sheet, one owner. Quantity is fixed at one.</p>
           </div>
-
-          {selectedStockLimit !== null && selectedStockLimit > 0 && (
-            <p className="text-sm text-[var(--ink-soft)]">
-              {selectedStockLimit} available for the selected options
-            </p>
-          )}
         </>
+      ) : (
+        <fieldset className="product-purchase__variants">
+          <legend>Choose an edition</legend>
+          {variants.flatMap((variant) =>
+            (variant.options || []).map((option) => {
+              const selected = selectedOptionIds[variant.id] === option.id;
+              const available = isVariantOptionAvailable(variant, option);
+              const optionPrice = getSelectedUnitPrice(
+                product.pricing.finalPrice,
+                [{ variant, option }],
+              );
+
+              return (
+                <button
+                  key={`${variant.id}-${option.id}`}
+                  type="button"
+                  aria-pressed={selected}
+                  disabled={!available}
+                  onClick={() => updateVariant(variant.id, option.id)}
+                  className="product-purchase__variant"
+                >
+                  <span>
+                    <strong>
+                      {variant.label || option.value || "Print edition"}
+                    </strong>
+                    <small>
+                      {getVariantDescription(variant, option, product.artSpecs)}
+                    </small>
+                  </span>
+                  <span>{formatPriceToIntl(optionPrice, currencyCode)}</span>
+                  {!available && <em>Sold out</em>}
+                </button>
+              );
+            }),
+          )}
+        </fieldset>
+      )}
+
+      {!isOriginal && (
+        <div className="product-purchase__quantity-row">
+          <div className="product-purchase__quantity">
+            <button
+              type="button"
+              onClick={() =>
+                setProductQuantity(Math.max(1, productQuantity - 1))
+              }
+              disabled={soldOut || productQuantity <= 1}
+              aria-label="Decrease quantity"
+            >
+              <Minus size={16} aria-hidden="true" />
+            </button>
+            <span>{productQuantity}</span>
+            <button
+              type="button"
+              onClick={() =>
+                setProductQuantity(
+                  selectedStockLimit == null
+                    ? productQuantity + 1
+                    : Math.min(selectedStockLimit, productQuantity + 1),
+                )
+              }
+              disabled={
+                soldOut ||
+                (selectedStockLimit != null &&
+                  productQuantity >= selectedStockLimit)
+              }
+              aria-label="Increase quantity"
+            >
+              <Plus size={16} aria-hidden="true" />
+            </button>
+          </div>
+          <p>
+            {selectedFulfillmentType === 0
+              ? "Available to download after checkout"
+              : "Printed to order in 3 working days"}
+          </p>
+        </div>
       )}
 
       {errorMessage && (
-        <p
-          role="alert"
-          className="border-l-2 border-[var(--danger)] pl-4 text-sm text-[var(--danger)]"
-        >
+        <p role="alert" className="product-purchase__error">
           {errorMessage}
         </p>
       )}
@@ -212,20 +356,23 @@ export default function HandleCartLogicComponent({
         type="button"
         onClick={handleAddToCart}
         disabled={cartStatus === "loading" || soldOut}
-        className={`relative overflow-hidden rounded-full px-8 py-4 font-medium transition-colors duration-300 disabled:cursor-not-allowed disabled:bg-[var(--paper-deep)] disabled:text-[var(--muted)] ${
-          added
-            ? "bg-[var(--accent-1)] text-white"
-            : "bg-[var(--ink)] text-[var(--paper)] hover:bg-[var(--ink-soft)]"
-        }`}
+        className={`product-purchase__cta${added ? " is-added" : ""}`}
       >
         {soldOut
           ? "Sold out"
           : added
             ? "Added"
             : isOriginal
-              ? "Acquire Original"
-              : "Add Print to Cart"}
+              ? "Acquire original"
+              : "Add print to cart"}
       </button>
-    </ContainerSimple>
+      <p className="product-purchase__assurance">
+        {isOriginal
+          ? "Held for 30 minutes at checkout"
+          : "Ships worldwide · Secure checkout"}
+      </p>
+
+      <ProductDetails product={product} isOriginal={isOriginal} />
+    </div>
   );
 }

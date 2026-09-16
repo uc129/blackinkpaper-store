@@ -41,8 +41,11 @@ function filterDistinctArtworks(
   });
 }
 
-export function distinctArtworks(products: ProductSummaryDto[]) {
-  return filterDistinctArtworks(products);
+export function distinctArtworks(
+  products: ProductSummaryDto[],
+  previouslyVisible: ProductSummaryDto[] = [],
+) {
+  return filterDistinctArtworks(products, previouslyVisible);
 }
 
 export function distributeDistinctArtworks(
